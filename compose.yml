@@ -1,0 +1,38 @@
+networks:
+  default:
+    name: project24
+volumes:
+  db:
+
+services:
+  db: &db-template
+    image: postgres:16
+    volumes:
+      - db:/var/lib/postgresql/data/
+      - ./src/main/docker/db-backup/:/backup/
+      - ./src/main/docker/db-init/create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGPASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+
+  restore-db:
+    <<: *db-template
+    ports: [ ]
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd /backup
+        zcat project24_public.sql.gz | psql -h db -U manager project24
+    profiles: [ "db-restore" ]
+
+  backup-db:
+    <<: *db-template
+    ports: [ ]
+    environment: [ ]
+    command: "/backup/db-backup.sh"
+    profiles: [ "db-backup" ]
