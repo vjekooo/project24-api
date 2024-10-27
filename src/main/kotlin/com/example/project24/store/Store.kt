@@ -4,6 +4,21 @@ import com.example.project24.address.Address
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 
+enum class MediaType {
+    IMAGE,
+    VIDEO
+}
+
+@Embeddable
+data class Media(
+    @NotEmpty
+    val url: String,
+    @NotEmpty
+    val type: MediaType
+) {
+    constructor() : this("", MediaType.IMAGE)
+}
+
 @Entity
 data class Store(
     @Id
@@ -14,7 +29,15 @@ data class Store(
     @NotEmpty
     val description: String,
     @ElementCollection
-    val media: List<String> = listOf(),
+    @CollectionTable(
+        name = "store_media",
+        joinColumns = [JoinColumn(name = "store_id")]
+    )
+    @AttributeOverrides(
+        AttributeOverride(name = "url", column = Column(name = "url")),
+        AttributeOverride(name = "type", column = Column(name = "type"))
+    )
+    val media: List<Media> = listOf(),
     @OneToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "address_id")
     val address: Address
