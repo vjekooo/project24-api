@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -20,9 +21,9 @@ class UserController(private val userRepository: UserRepository) {
         return userRepository.findAll();
     }
 
-    @GetMapping("/{userName}")
-    public fun findByUsername(@PathVariable userName: String): User? {
-        val user = userRepository.findByUserName(userName);
+    @GetMapping("/{email}")
+    public fun findByEmail(@PathVariable email: String): User? {
+        val user = userRepository.findByEmail(email);
         if (user == null) {
             throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
@@ -37,5 +38,20 @@ class UserController(private val userRepository: UserRepository) {
     @PostMapping("/create")
     public fun createUser(@Valid @RequestBody user: User) {
         userRepository.save(user);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PutMapping("/update")
+    public fun updateUser(@Valid @RequestBody user: User) {
+        val existingUser = userRepository.findByEmail(user.email);
+        if (existingUser == null) {
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "User not found"
+            );
+        } else {
+            user.id = existingUser.id;
+            userRepository.save(user);
+        }
     }
 }
