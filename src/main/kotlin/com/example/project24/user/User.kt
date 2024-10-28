@@ -7,6 +7,10 @@ import jakarta.persistence.CascadeType.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 
+enum class Role {
+    USER, ADMIN
+}
+
 @Entity
 @Table(
     name = "users",
@@ -27,6 +31,7 @@ data class User(
     var lastName: String,
     @NotEmpty
     var password: String,
+    val role: Role = Role.USER,
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "address_id")
     val address: Address? = null,
@@ -34,5 +39,5 @@ data class User(
     @JoinColumn(name = "store_id")
     val store: Store? = null,
 ) {
-    constructor() : this(0, "", "", "", "", "", Address())
+    constructor() : this(0, "", "", "", "", "", Role.USER, Address())
 }
