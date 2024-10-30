@@ -31,7 +31,7 @@ data class User(
     var lastName: String,
     @NotEmpty
     var password: String,
-    val role: Role = Role.USER,
+    val role: Role? = Role.USER,
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "address_id")
     val address: Address? = null,

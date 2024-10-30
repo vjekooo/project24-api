@@ -29,27 +29,12 @@ class AuthController(
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody user: Login, session: HttpSession): String {
-        val foundUser = userRepository.findByEmail(user.email);
-        if (foundUser == null) {
-            throw ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Error logging in"
-            );
-        } else if (!BCryptPasswordEncoder().matches(
-                user.password,
-                foundUser.password
-            )
-        ) {
-            throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Invalid password"
-            );
-        } else {
-            session.setAttribute("username", user.email)
-            val sessionId = session.id
-            return "Session created with ID: $sessionId"
-        }
+    fun login(
+        @RequestBody credentials: AuthRequest,
+        session: HttpSession
+    ): AuthResponse {
+        val accessToken = authService.authentication(credentials)
+        return accessToken
     }
 
     @GetMapping("/logout")

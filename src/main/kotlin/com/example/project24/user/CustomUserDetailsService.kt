@@ -22,6 +22,6 @@ class CustomUserDetailsService(
         User.builder()
             .username(this.email)
             .password(this.password)
-            .roles(this.role.name)
+            .roles(this.role?.name)
             .build()
 }
