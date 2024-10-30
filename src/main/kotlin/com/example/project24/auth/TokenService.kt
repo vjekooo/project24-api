@@ -22,9 +22,10 @@ class TokenService(
         additionalClaims: Map<String, Any> = emptyMap()
     ): String =
         Jwts.builder()
-            .setId(UUID.randomUUID().toString())
+            .setSubject(userDetails.username)
             .setIssuedAt(Date(System.currentTimeMillis()))
             .setExpiration(expirationDate)
+            // TODO: Make it safer
             .signWith(secretKey)
             .compact()
 
