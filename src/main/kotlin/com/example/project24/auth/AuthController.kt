@@ -2,6 +2,7 @@ package com.example.project24.auth
 
 import com.example.project24.user.User
 import com.example.project24.user.UserRepository
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -12,7 +13,8 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/api/auth")
 class AuthController(
     private val userRepository: UserRepository,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val tokenService: TokenService
 ) {
 
     @PostMapping
@@ -31,10 +33,11 @@ class AuthController(
     @PostMapping("/login")
     fun login(
         @RequestBody credentials: AuthRequest,
-        session: HttpSession
-    ): AuthResponse {
-        val accessToken = authService.authentication(credentials)
-        return accessToken
+        session: HttpSession,
+        response: HttpServletResponse,
+    ) {
+        val token = authService.authentication(credentials)
+        tokenService.setCookie(response, token.accessToken)
     }
 
     @PostMapping("/refresh")

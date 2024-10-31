@@ -57,17 +57,9 @@ class AuthService(
 
     private fun createAccessToken(user: UserDetails) = tokenService.generate(
         userDetails = user,
-        expirationDate = getAccessTokenExpiration()
     )
 
     private fun createRefreshToken(user: UserDetails) = tokenService.generate(
         userDetails = user,
-        expirationDate = getRefreshTokenExpiration()
     )
-
-    private fun getAccessTokenExpiration(): Date =
-        Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration)
-
-    private fun getRefreshTokenExpiration(): Date =
-        Date(System.currentTimeMillis() + jwtProperties.refreshTokenExpiration)
 }
