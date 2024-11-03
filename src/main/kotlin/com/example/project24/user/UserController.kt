@@ -2,8 +2,8 @@ package com.example.project24.user
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,13 +16,9 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/api/user")
 class UserController(private val userRepository: UserRepository) {
 
-    @GetMapping
-    public fun getUsers(): Iterable<User> {
-        return userRepository.findAll();
-    }
-
-    @GetMapping("/{email}")
-    public fun findByEmail(@PathVariable email: String): User? {
+    @GetMapping("")
+    fun findByEmail(authentication: Authentication): User? {
+        val email = authentication.name
         val user = userRepository.findByEmail(email);
         if (user == null) {
             throw ResponseStatusException(
@@ -36,13 +32,13 @@ class UserController(private val userRepository: UserRepository) {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
-    public fun createUser(@Valid @RequestBody user: User) {
+    fun createUser(@Valid @RequestBody user: User) {
         userRepository.save(user);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/update")
-    public fun updateUser(@Valid @RequestBody user: User) {
+    fun updateUser(@Valid @RequestBody user: User) {
         val existingUser = userRepository.findByEmail(user.email);
         if (existingUser == null) {
             throw ResponseStatusException(

@@ -19,23 +19,29 @@ class SecurityConfiguration(
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        jwtAuthenticationFilter: JwtAuthFilter
+        jwtAuthenticationFilter: JwtAuthFilter,
+        configuration: com.example.project24.config.Configuration
     ): DefaultSecurityFilterChain {
         http
             .csrf { it.disable() }
+            .cors { configuration.corsConfigurationSource() }
             .authorizeHttpRequests {
                 it
                     .requestMatchers(
-                        "/api/auth/login", "api/auth/refresh",
-                        "api/auth/register", "/error"
-                    )
-                    .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/user")
-                    .permitAll()
-                    .requestMatchers("/api/user**")
-                    .hasRole("ADMIN")
-                    .anyRequest()
-                    .fullyAuthenticated()
+                        "/",
+                        "/error",
+                        "/favicon.ico",
+                        "/*/*.png",
+                        "/*/*.gif",
+                        "/*/*.svg",
+                        "/*/*.jpg",
+                        "/*/*.html",
+                        "/*/*.css",
+                        "/*/*.js"
+                    ).permitAll()
+                    .requestMatchers("/auth/**").permitAll()
+                    .anyRequest().authenticated();
+
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

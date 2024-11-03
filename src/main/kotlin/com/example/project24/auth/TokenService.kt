@@ -5,10 +5,9 @@ import com.example.project24.config.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import jakarta.servlet.http.Cookie
 import java.util.*
 
 @Service
@@ -26,27 +25,28 @@ class TokenService(
     private val httpOnly = cookieProperties.httpOnly
     private val secure = cookieProperties.secure
 
-    private val maxTokenAge = accessTokenExpiration * 10
-
     fun generate(
         userDetails: UserDetails,
     ): String =
         Jwts.builder()
             .setSubject(userDetails.username)
             .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + maxTokenAge))
+            .setExpiration(Date(System.currentTimeMillis() + accessTokenExpiration))
             // TODO: Make it safer
             .signWith(secretKey)
             .compact()
 
-    fun setCookie(response: HttpServletResponse, token: String) {
-        val cookie = Cookie(cookieName, token)
-        cookie.isHttpOnly = httpOnly
-        cookie.secure = secure
-        cookie.path = path
-        cookie.maxAge = maxTokenAge
-        response.addCookie(cookie)
-    }
+    fun createCookie(
+        token: String
+    ): String =
+        ResponseCookie.from(cookieName, token)
+            .path(path)
+            .httpOnly(httpOnly)
+            .maxAge(accessTokenExpiration)
+            .sameSite("None")
+            .domain("localhost")
+            .build()
+            .toString()
 
     fun isValid(token: String, userDetails: UserDetails): Boolean {
         val email = extractEmail(token)

@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException
 class AuthController(
     private val userRepository: UserRepository,
     private val authService: AuthService,
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
 ) {
 
     @PostMapping
@@ -35,9 +35,12 @@ class AuthController(
         @RequestBody credentials: AuthRequest,
         session: HttpSession,
         response: HttpServletResponse,
-    ) {
+    ): AuthResponse {
         val token = authService.authentication(credentials)
-        tokenService.setCookie(response, token.accessToken)
+//        val cookie = tokenService.createCookie(token.accessToken)
+//        return response.addHeader("Set-Cookie", cookie)
+
+        return token
     }
 
     @PostMapping("/refresh")
