@@ -39,7 +39,11 @@ class SecurityConfiguration(
                         "/*/*.css",
                         "/*/*.js"
                     ).permitAll()
-                    .requestMatchers("/api/auth/login", "/api/auth/register")
+                    .requestMatchers(
+                        "/api/auth/login",
+                        "/api/auth/register",
+                        "/api/auth/confirm-registration"
+                    )
                     .permitAll()
                     .anyRequest().authenticated();
 

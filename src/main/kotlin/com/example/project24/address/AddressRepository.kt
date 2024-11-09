@@ -1,5 +1,5 @@
 package com.example.project24.address
 
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface AddressRepository : CrudRepository<Address, Int?> {}
+interface AddressRepository : JpaRepository<Address, Int?> {}
