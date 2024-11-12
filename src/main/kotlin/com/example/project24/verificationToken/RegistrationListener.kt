@@ -37,7 +37,7 @@ class RegistrationListener : ApplicationListener<OnRegistrationCompleteEvent> {
         val subject = "Registration Confirmation"
         val confirmationUrl
                 : String =
-            event.getAppUrl() + "/auth/confirm-registration?token=" + token
+            event.getAppUrl() + "/confirm-registration?token=" + token
 //        val message =
 //            messages!!.getMessage(
 //                "message.regSuccessLink",

@@ -17,7 +17,7 @@ data class VerificationToken(
     @JoinColumn(nullable = false, name = "user_id")
     val user: User? = null,
 
-    val expiryDate: Date? = null,
+    val expiryDate: Date? = Date(System.currentTimeMillis() + 3600000),
 ) {
     constructor() : this(null, null, null, null)
 

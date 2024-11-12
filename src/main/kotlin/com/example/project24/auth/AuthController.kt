@@ -35,33 +35,30 @@ class AuthController(
     ): AuthResponse =
         authService.authentication(authRequest)
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     fun register(
         @RequestBody user: User,
-        request: HttpServletRequest
-    ) {
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): String {
+        val appUrl = getBaseUrl(response)
         user.password = BCryptPasswordEncoder().encode(user.password)
         val registered = userRepository.save(user)
-        val appUrl = getBaseUrl(request)
         eventPublisher.publishEvent(
             OnRegistrationCompleteEvent(
                 registered,
                 request.locale, appUrl
             )
         )
+        return "User registered successfully."
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm-registration")
     fun confirmRegistration(
         @RequestParam token: String
-    ) {
-        println(token)
+    ): String {
         val verificationToken: VerificationToken? =
             userService.getVerificationToken(token);
-
-        println(verificationToken)
 
         if (verificationToken == null) {
             throw ResponseStatusException(
@@ -84,6 +81,7 @@ class AuthController(
         }
         user.enabled = true;
         userRepository.save(user);
+        return "Email verified successfully."
     }
 
     @PostMapping("/login")
@@ -122,14 +120,9 @@ class AuthController(
     }
 }
 
-private fun getBaseUrl(request: HttpServletRequest): String {
-    val scheme = request.scheme
-    val serverName = request.serverName
-    val serverPort = request.serverPort
-    val contextPath = request.contextPath
-    return if (serverPort == 80 || serverPort == 443) {
-        "$scheme://$serverName$contextPath"
-    } else {
-        "$scheme://$serverName:$serverPort$contextPath"
-    }
+private fun getBaseUrl(
+    response: HttpServletResponse
+): String {
+    val origin = response.getHeader("Access-Control-Allow-Origin")
+    return origin
 }
