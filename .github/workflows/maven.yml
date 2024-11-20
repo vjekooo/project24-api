@@ -14,25 +14,28 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
-  build:
+env:
+  POSTGRES_DB: ${{ env.DB_NAME }}
+  POSTGRES_USER: ${{ env.DB_USERNAME }}
+  POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+  SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
+  SPRING_DATASOURCE_USERNAME: ${{ env.POSTGRES_USER }}
+  SPRING_DATASOURCE_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-        POSTGRES_DB: ${{ env.DB_NAME }}
-        POSTGRES_USER: ${{ env.DB_USERNAME }}
-        POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+  services:
+    postgres:
+      image: postgres:15
+      ports:
+        - 5432:5432
+      env:
+        POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        POSTGRES_USER: ${{ env.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +54,6 @@ jobs:
       - name: Build with Maven
         env:
           SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ env.DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ env.DB_PASSWORD }}
+          SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
         run: mvn -B package --file pom.xml
