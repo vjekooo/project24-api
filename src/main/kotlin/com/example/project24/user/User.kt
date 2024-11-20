@@ -22,9 +22,7 @@ data class User(
     @NotEmpty
     @Email
     var email: String,
-    @NotEmpty
     var firstName: String,
-    @NotEmpty
     var lastName: String,
     @NotEmpty
     var password: String,
