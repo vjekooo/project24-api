@@ -22,6 +22,10 @@ env:
   SPRING_DATASOURCE_USERNAME: ${{ env.POSTGRES_USER }}
   SPRING_DATASOURCE_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
   services:
     postgres:
       image: postgres:15
