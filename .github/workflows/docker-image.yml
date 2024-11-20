@@ -1,32 +1,23 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "release/**" ]
-  pull_request:
-    branches: [ "release/**" ]
+  workflow_dispatch:
+  release:
+    types: [ published ]
 
 env:
   DOCKER_IMAGE_NAME: project24
   DOCKER_REGISTRY_URL: beepbip/project24
+  RELEASE_VERSION: ${{ github.event.release.tag_name }}
 
 jobs:
   build_docker_images:
-    name: Build Docker Images
+    name: Build Docker Image
     runs-on: self-hosted
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Get the release version
-        # i.e.: release/1.0.0 -> 1.0.
-        id: strip-branch-name
-        run: |
-          release_version=$(echo "${{ github.ref }}" | sed 's/refs\/heads\/.*\///')
-          echo "Building release version $release_version"
-          echo "RELEASE_VERSION=$release_version" >> $GITHUB_ENV
-          shell: bash
 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag $DOCKER_IMAGE_NAME:$RELEASE_VERSION
