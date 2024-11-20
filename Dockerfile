@@ -1,14 +1,10 @@
-# Use an official OpenJDK runtime as a parent image
+FROM maven:3.9.9-amazoncorretto-8-alpine AS builder
+WORKDIR /builder
+COPY . /builder
+RUN mvn clean package -DskipTests
+
 FROM openjdk:21-jdk-slim
-
-# Set the working directory in the container
 WORKDIR /app
-
-# Copy the executable JAR file into the container
-COPY target/project24-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the port the app runs on
 EXPOSE 8080
-
-# Run the JAR file
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=builder /builder/target/*.jar /app/server.jar
+CMD ["java", "-jar", "server.jar"]
