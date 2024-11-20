@@ -7,7 +7,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: project24
-  DOCKER_REGISTRY_URL: beepbip/project24
+  DOCKER_REGISTRY_URL: beepbip
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   RELEASE_VERSION: ${{ github.event.release.tag_name }}
