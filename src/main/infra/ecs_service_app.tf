@@ -44,8 +44,6 @@ resource "aws_ecs_service" "default" {
   depends_on = [aws_alb.default]
 
   # java app can take ~100 seconds to start up with
-  # current memory settings
-  # 2023-03-05 17:44:11.314  INFO 7 --- [           main] example.App                              : Started App in 88.608 seconds (JVM running for 93.593)
   health_check_grace_period_seconds = 300
 
   load_balancer {
@@ -86,7 +84,6 @@ resource "aws_security_group_rule" "ecs_task_ingress_admin" {
 
   description = "allow connections to ECS tasks from admin cidr for debugging"
 }
-
 
 resource "aws_security_group_rule" "ecs_task_egress_all" {
   security_group_id = aws_security_group.ecs_task.id
