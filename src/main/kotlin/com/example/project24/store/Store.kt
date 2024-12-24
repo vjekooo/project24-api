@@ -31,7 +31,7 @@ data class Store(
     @ElementCollection
     @CollectionTable(
         name = "store_media",
-        joinColumns = [JoinColumn(name = "store_id")]
+        joinColumns = [JoinColumn(name = "store_id")],
     )
     @AttributeOverrides(
         AttributeOverride(name = "url", column = Column(name = "url")),

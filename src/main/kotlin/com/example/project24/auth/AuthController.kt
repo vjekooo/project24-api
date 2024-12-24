@@ -57,15 +57,12 @@ class AuthController(
     fun confirmRegistration(
         @RequestParam token: String
     ): String {
-        val verificationToken: VerificationToken? =
-            userService.getVerificationToken(token);
-
-        if (verificationToken == null) {
-            throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Invalid token."
-            )
-        }
+        val verificationToken: VerificationToken =
+            userService.getVerificationToken(token)
+                ?: throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid token."
+                );
 
         val user: User = verificationToken.user
             ?: throw ResponseStatusException(
