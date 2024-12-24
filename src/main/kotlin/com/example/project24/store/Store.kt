@@ -42,5 +42,9 @@ data class Store(
     @JoinColumn(name = "address_id")
     val address: Address
 ) {
-    constructor() : this(0, "", "", listOf(), Address())
+    constructor() : this(
+        0, "", "", listOf(), Address()
+    ) {
+
+    }
 }
