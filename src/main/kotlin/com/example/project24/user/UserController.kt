@@ -27,7 +27,8 @@ class UserController {
         val authentication = SecurityContextHolder.getContext()
             .authentication as CustomAuthenticationToken
         val userId = authentication.userId.toInt()
-        return userService.getUserDetails(userId)
+        val user = userService.getUserDetails(userId)
+        return user
     }
 
     @ResponseStatus(HttpStatus.CREATED)
