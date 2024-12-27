@@ -1,5 +1,5 @@
 package com.example.project24.config
 
-data class ApiResponse(
+data class ApiMessageResponse(
     val message: String
 )

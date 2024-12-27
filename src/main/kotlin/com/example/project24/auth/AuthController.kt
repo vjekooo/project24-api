@@ -1,6 +1,6 @@
 package com.example.project24.auth
 
-import com.example.project24.config.ApiResponse
+import com.example.project24.config.ApiMessageResponse
 import com.example.project24.user.User
 import com.example.project24.user.UserRepository
 import com.example.project24.user.UserService
@@ -46,7 +46,7 @@ class AuthController(
         @RequestBody user: User,
         request: HttpServletRequest,
         response: HttpServletResponse
-    ): ResponseEntity<ApiResponse> {
+    ): ResponseEntity<ApiMessageResponse> {
         val appUrl = getBaseUrl(response)
         user.password = BCryptPasswordEncoder().encode(user.password)
         val registered = userRepository.save(user)
@@ -57,7 +57,7 @@ class AuthController(
             )
         )
         return ResponseEntity(
-            ApiResponse("User registered successfully. Check your email for verification link."),
+            ApiMessageResponse("User registered successfully. Check your email for verification link."),
             HttpStatus.CREATED
         )
     }
@@ -74,11 +74,7 @@ class AuthController(
                     "Invalid token."
                 );
 
-        val user: User = verificationToken.user
-            ?: throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Token not matched with any user."
-            );
+        val user: User = verificationToken.user;
 
         if ((verificationToken.isTokenExpired())) {
             throw ResponseStatusException(
