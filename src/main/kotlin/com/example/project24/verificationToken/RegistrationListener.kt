@@ -29,7 +29,9 @@ class RegistrationListener : ApplicationListener<OnRegistrationCompleteEvent> {
     private fun confirmRegistration(event: OnRegistrationCompleteEvent) {
         val user: User = event.getUser()
         val token: String = UUID.randomUUID().toString()
-        userService?.createVerificationTokenForUser(user, token)
+
+        val myToken = VerificationToken(0, token, user)
+        userService?.createVerificationTokenForUser(myToken)
 
         val message: MimeMessage? = mailSender?.createMimeMessage()
 

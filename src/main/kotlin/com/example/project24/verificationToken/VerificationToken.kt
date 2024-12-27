@@ -9,17 +9,19 @@ import java.util.*
 data class VerificationToken(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long? = null,
+    val id: Long,
 
-    val token: String? = null,
+    val token: String,
 
     @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
-    val user: User? = null,
+    val user: User,
 
-    val expiryDate: Date? = Date(System.currentTimeMillis() + 3600000),
+    val expiryDate: Date = Date(System.currentTimeMillis() + 3600000),
 ) {
-    constructor() : this(null, null, null, null)
+    constructor() : this(0, "", User()) {
+
+    }
 
     fun isTokenExpired(): Boolean {
         return expiryDate!!.before(Timestamp(System.currentTimeMillis()))

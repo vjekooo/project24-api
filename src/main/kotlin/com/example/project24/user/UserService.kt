@@ -1,26 +1,28 @@
 package com.example.project24.user
 
 import com.example.project24.verificationToken.VerificationToken
-import com.example.project24.verificationToken.VerificationTokenRepository
+import com.example.project24.verificationToken.VerificationTokenService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class UserService() {
+class UserService {
 
     @Autowired
     lateinit var userRepository: UserRepository
 
     @Autowired
-    private val tokenRepository: VerificationTokenRepository? = null
+    lateinit var verificationTokenService: VerificationTokenService
 
-    fun createVerificationTokenForUser(user: User?, token: String?) {
-        val myToken = VerificationToken(null, token, user)
-        tokenRepository?.save(myToken)
+    fun createVerificationTokenForUser(token: VerificationToken) {
+        verificationTokenService.save(token)
     }
 
-    fun getVerificationToken(VerificationToken: String?): VerificationToken? {
-        return tokenRepository!!.findByToken(VerificationToken)
+    fun getVerificationToken(verificationToken: String?): VerificationToken? {
+        if (verificationToken == null) {
+            return null
+        }
+        return verificationTokenService.findByToken(verificationToken)
     }
 
     fun saveRegisteredUser(user: User) {

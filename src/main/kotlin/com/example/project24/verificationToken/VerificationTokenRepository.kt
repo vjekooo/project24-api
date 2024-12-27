@@ -1,5 +1,6 @@
 package com.example.project24.verificationToken
 
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -11,6 +12,10 @@ interface VerificationTokenRepository :
     fun findByToken(token: String?): VerificationToken?
 
     @Modifying
-    @Query("delete from VerificationToken t where t.user = :userdId")
+    @Transactional
+    @Query(
+        value = "DELETE FROM verification_token t WHERE t.user_id = :userId",
+        nativeQuery = true
+    )
     fun deleteByUserId(userId: Long?)
 }
