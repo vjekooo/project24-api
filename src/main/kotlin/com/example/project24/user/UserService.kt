@@ -24,9 +24,4 @@ class UserService {
         }
         return verificationTokenService.findByToken(verificationToken)
     }
-
-    fun saveRegisteredUser(user: User) {
-        userRepository.save(user)
-    }
-
 }

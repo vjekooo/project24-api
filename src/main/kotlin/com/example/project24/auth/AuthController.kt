@@ -72,9 +72,9 @@ class AuthController(
                 ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid token."
-                );
+                )
 
-        val user: User = verificationToken.user;
+        val user: User = verificationToken.user
 
         if ((verificationToken.isTokenExpired())) {
             throw ResponseStatusException(
@@ -82,7 +82,7 @@ class AuthController(
                 "Token expired."
             )
         }
-        user.enabled = true;
+        user.enabled = true
         userRepository.save(user)
 
         this.verificationTokenService.deleteVerificationToken(user.id)

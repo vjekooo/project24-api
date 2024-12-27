@@ -24,6 +24,6 @@ data class VerificationToken(
     }
 
     fun isTokenExpired(): Boolean {
-        return expiryDate!!.before(Timestamp(System.currentTimeMillis()))
+        return expiryDate.before(Timestamp(System.currentTimeMillis()))
     }
 }

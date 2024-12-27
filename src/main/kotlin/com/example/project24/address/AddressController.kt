@@ -15,6 +15,6 @@ class AddressController(private val addressRepository: AddressRepository) {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     fun create(@Valid @RequestBody address: Address) {
-        addressRepository.save(address);
+        addressRepository.save(address)
     }
 }
