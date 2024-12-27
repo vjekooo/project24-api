@@ -29,7 +29,11 @@ class StoreController {
 
         val token = authHeader.removePrefix("Bearer ").trim()
         val userId = this.tokenService.extractUserId(token)
-        val allStores = this.storeService.getUserStores(userId)
+        val id = userId ?: return ResponseEntity(
+            HttpStatus
+                .UNAUTHORIZED
+        )
+        val allStores = this.storeService.getUserStores(id)
 
         return ResponseEntity(
             allStores ?: emptyList(),

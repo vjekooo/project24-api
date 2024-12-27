@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import kotlin.math.log
+import kotlin.reflect.typeOf
 
 @Component
 class JwtAuthFilter(
@@ -30,8 +32,9 @@ class JwtAuthFilter(
             return
         }
 
-        val jwtToken = authHeader!!.extractTokenValue()
-        val email = tokenService.extractEmail(jwtToken)
+        val jwtToken = authHeader?.extractTokenValue()
+
+        val email = jwtToken?.let { tokenService.extractEmail(it) }
 
         if (email != null && SecurityContextHolder.getContext().authentication == null) {
             val foundUser = userDetailsService.loadUserByUsername(email)
@@ -47,8 +50,11 @@ class JwtAuthFilter(
     private fun String?.doesNotContainBearerToken() =
         this == null || !this.startsWith("Bearer ")
 
-    private fun String.extractTokenValue() =
-        this.substringAfter("Bearer ")
+    private fun String.extractTokenValue(): String? {
+        val token = this.substringAfter("Bearer ")
+        if (token == "undefined") return null
+        return token
+    }
 
     private fun updateContext(
         foundUser: UserDetails,

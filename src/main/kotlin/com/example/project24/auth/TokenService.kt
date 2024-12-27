@@ -43,16 +43,25 @@ class TokenService(
     ): Cookie {
         val cookie = Cookie(cookieName, token)
 
-        cookie.apply {
-            isHttpOnly = httpOnly
-            secure = false
-            path = path
-            maxAge = accessTokenExpiration.toInt()
-            domain = "localhost"
-            setAttribute(
-                "userId",
-                ""
-            )
+        try {
+            val userId = extractUserId(token)
+
+            cookie.apply {
+                isHttpOnly = httpOnly
+                secure = false
+                path = path
+                maxAge = accessTokenExpiration.toInt()
+                setAttribute(
+                    "userId",
+                    userId.toString()
+                )
+                setAttribute(
+                    "sameSite",
+                    "none"
+                )
+            }
+        } catch (e: Exception) {
+            throw RuntimeException("Error creating cookie", e)
         }
 
         return cookie
@@ -68,9 +77,14 @@ class TokenService(
         getAllClaims(token)
             .subject
 
-    fun extractUserId(token: String): Long =
-        getAllClaims(token)
-            .get("userId", Long::class.java)
+    fun extractUserId(token: String): Long? {
+        return try {
+            val claims = getAllClaims(token)
+            claims["userId"] as? Long
+        } catch (e: Exception) {
+            return null
+        }
+    }
 
     fun isExpired(token: String): Boolean =
         getAllClaims(token)
