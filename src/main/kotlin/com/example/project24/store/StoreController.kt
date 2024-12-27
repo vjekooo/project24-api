@@ -19,6 +19,15 @@ class StoreController {
         this.storeService.createStore(store)
     }
 
+    @GetMapping("/user")
+    fun getUserStores(): ResponseEntity<List<Store>> {
+        val allStores = this.storeService.getUserStores(1)
+        return ResponseEntity(
+            allStores ?: emptyList(),
+            if (allStores != null) HttpStatus.OK else HttpStatus.NOT_FOUND
+        )
+    }
+
     @GetMapping("")
     fun getAllStores() {
         this.storeService.getAllStores()
