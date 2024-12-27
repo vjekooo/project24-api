@@ -5,6 +5,7 @@ import com.example.project24.user.UserRepository
 import com.example.project24.user.UserService
 import com.example.project24.verificationToken.OnRegistrationCompleteEvent
 import com.example.project24.verificationToken.VerificationToken
+import com.example.project24.verificationToken.VerificationTokenService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
@@ -29,6 +30,9 @@ class AuthController(
 
     @Autowired
     lateinit var userService: UserService
+
+    @Autowired
+    lateinit var verificationTokenService: VerificationTokenService
 
     @PostMapping
     fun authenticate(
@@ -83,6 +87,8 @@ class AuthController(
         }
         user.enabled = true;
         userRepository.save(user)
+
+        this.verificationTokenService.deleteVerificationToken(user.id)
 
         val token =
             authService.authentication(AuthRequest(user.email, user.password))

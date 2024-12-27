@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface StoreRepository : JpaRepository<Store, Long> {
 
     @Query(
-        value = "SELECT * FROM store WHERE user_id = :id",
+        value = "SELECT * FROM store WHERE user = :id",
         nativeQuery = true
     )
     fun findAllByUserId(@Param("id") id: Long): List<Store>?
