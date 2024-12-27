@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -40,7 +41,7 @@ class AuthController(
         @RequestBody user: User,
         request: HttpServletRequest,
         response: HttpServletResponse
-    ): String {
+    ): ResponseEntity<String> {
         val appUrl = getBaseUrl(response)
         user.password = BCryptPasswordEncoder().encode(user.password)
         val registered = userRepository.save(user)
@@ -50,13 +51,17 @@ class AuthController(
                 request.locale, appUrl
             )
         )
-        return "User registered successfully."
+        return ResponseEntity(
+            "User registered successfully. Check your email for verification link.",
+            HttpStatus.CREATED
+        )
     }
 
     @GetMapping("/confirm-registration")
     fun confirmRegistration(
-        @RequestParam token: String
-    ): String {
+        @RequestParam token: String,
+        response: HttpServletResponse,
+    ): ResponseEntity<User> {
         val verificationToken: VerificationToken =
             userService.getVerificationToken(token)
                 ?: throw ResponseStatusException(
@@ -77,8 +82,17 @@ class AuthController(
             )
         }
         user.enabled = true;
-        userRepository.save(user);
-        return "Email verified successfully."
+        userRepository.save(user)
+
+        val token =
+            authService.authentication(AuthRequest(user.email, user.password))
+        val cookie = this.tokenService.createCookie(token.accessToken)
+        response.addCookie(cookie)
+
+        return ResponseEntity(
+            user,
+            HttpStatus.OK
+        )
     }
 
     @PostMapping("/login")
@@ -88,8 +102,8 @@ class AuthController(
         response: HttpServletResponse,
     ): AuthResponse {
         val token = authService.authentication(credentials)
-//        val cookie = tokenService.createCookie(token.accessToken)
-//        return response.addHeader("Set-Cookie", cookie)
+        val cookie = tokenService.createCookie(token.accessToken)
+        response.addCookie(cookie).let { token }
 
         return token
     }

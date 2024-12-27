@@ -1,6 +1,7 @@
 package com.example.project24.auth
 
 import com.example.project24.config.JwtProperties
+import com.example.project24.user.CustomUserDetails
 import com.example.project24.user.CustomUserDetailsService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -55,11 +56,13 @@ class AuthService(
         }
     }
 
-    private fun createAccessToken(user: UserDetails) = tokenService.generate(
-        userDetails = user,
-    )
+    private fun createAccessToken(user: CustomUserDetails) =
+        tokenService.generate(
+            userDetails = user,
+        )
 
-    private fun createRefreshToken(user: UserDetails) = tokenService.generate(
-        userDetails = user,
-    )
+    private fun createRefreshToken(user: CustomUserDetails) =
+        tokenService.generate(
+            userDetails = user,
+        )
 }

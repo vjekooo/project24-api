@@ -2,10 +2,11 @@ package com.example.project24.auth
 
 import com.example.project24.config.CookieProperties
 import com.example.project24.config.JwtProperties
+import com.example.project24.user.CustomUserDetails
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import org.springframework.http.ResponseCookie
+import jakarta.servlet.http.Cookie
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.*
@@ -26,10 +27,11 @@ class TokenService(
     private val secure = cookieProperties.secure
 
     fun generate(
-        userDetails: UserDetails,
+        userDetails: CustomUserDetails,
     ): String =
         Jwts.builder()
             .setSubject(userDetails.username)
+            .claim("userId", userDetails.getUserId())
             .setIssuedAt(Date(System.currentTimeMillis()))
             .setExpiration(Date(System.currentTimeMillis() + accessTokenExpiration))
             // TODO: Make it safer
@@ -37,16 +39,24 @@ class TokenService(
             .compact()
 
     fun createCookie(
-        token: String
-    ): String =
-        ResponseCookie.from(cookieName, token)
-            .path(path)
-            .httpOnly(httpOnly)
-            .maxAge(accessTokenExpiration)
-            .sameSite("None")
-            .domain("localhost")
-            .build()
-            .toString()
+        token: String,
+    ): Cookie {
+        val cookie = Cookie(cookieName, token)
+
+        cookie.apply {
+            isHttpOnly = httpOnly
+            secure = false
+            path = path
+            maxAge = accessTokenExpiration.toInt()
+            domain = "localhost"
+            setAttribute(
+                "userId",
+                ""
+            )
+        }
+
+        return cookie
+    }
 
     fun isValid(token: String, userDetails: UserDetails): Boolean {
         val email = extractEmail(token)
@@ -59,7 +69,8 @@ class TokenService(
             .subject
 
     fun extractUserId(token: String): Long =
-        getAllClaims(token).subject.toLong()
+        getAllClaims(token)
+            .get("userId", Long::class.java)
 
     fun isExpired(token: String): Boolean =
         getAllClaims(token)
