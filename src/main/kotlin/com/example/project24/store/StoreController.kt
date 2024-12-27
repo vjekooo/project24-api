@@ -31,7 +31,6 @@ class StoreController {
     @Autowired
     lateinit var addressService: AddressService
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     fun createStore(@Valid @RequestBody store: Store): ResponseEntity<ApiMessageResponse> {
 
@@ -41,21 +40,20 @@ class StoreController {
 
         val user: Optional<User> = userService.getUserDetails(userId)
         if (user.isEmpty) {
-            return (
-                    ResponseEntity(
-                        ApiMessageResponse("User not found"),
-                        HttpStatus.BAD_REQUEST
-                    ))
+            return ResponseEntity(
+                ApiMessageResponse("User not found"),
+                HttpStatus.BAD_REQUEST
+            )
         }
 
         val address: Optional<Address> =
             this.addressService.getAddressByUserId(userId)
 
         if (address.isEmpty) {
-            return (ResponseEntity(
+            return ResponseEntity(
                 ApiMessageResponse("Address not found"),
                 HttpStatus.BAD_REQUEST
-            ))
+            )
         }
 
         store.user = user.get()

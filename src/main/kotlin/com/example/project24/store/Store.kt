@@ -8,20 +8,20 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 import java.util.*
 
-enum class MediaType {
-    IMAGE,
-    VIDEO
-}
+//enum class MediaType {
+//    IMAGE,
+//    VIDEO
+//}
 
-@Embeddable
-data class Media(
-    @NotEmpty
-    val url: String,
-    @NotEmpty
-    val type: MediaType
-) {
-    constructor() : this("", MediaType.IMAGE)
-}
+//@Embeddable
+//data class Media(
+//    @NotEmpty
+//    val url: String,
+//    @NotEmpty
+//    val type: MediaType
+//) {
+//    constructor() : this("", MediaType.IMAGE)
+//}
 
 @Entity
 data class Store(
@@ -32,16 +32,16 @@ data class Store(
     val name: String,
     @NotEmpty
     val description: String,
-    @ElementCollection
-    @CollectionTable(
-        name = "store_media",
-        joinColumns = [JoinColumn(name = "store_id")],
-    )
-    @AttributeOverrides(
-        AttributeOverride(name = "url", column = Column(name = "url")),
-        AttributeOverride(name = "type", column = Column(name = "type"))
-    )
-    val media: List<Media> = listOf(),
+//    @ElementCollection
+//    @CollectionTable(
+//        name = "store_media",
+//        joinColumns = [JoinColumn(name = "store_id")],
+//    )
+//    @AttributeOverrides(
+//        AttributeOverride(name = "url", column = Column(name = "url")),
+//        AttributeOverride(name = "type", column = Column(name = "type"))
+//    )
+//    val media: List<Media>? = listOf(),
     @OneToOne(
         mappedBy = "store",
         cascade = [CascadeType.ALL],
@@ -59,7 +59,7 @@ data class Store(
     var updatedAt: Date? = Date()
 ) {
     constructor() : this(
-        0, "", "", listOf(), Address()
+        0, "", ""
     ) {
 
     }
