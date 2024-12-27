@@ -1,5 +1,6 @@
 package com.example.project24.address
 
+import com.example.project24.store.Store
 import com.example.project24.user.User
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
@@ -20,9 +21,13 @@ data class Address(
     @NotEmpty
     val postalCode: String,
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @JsonBackReference
     var user: User? = null,
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    @JsonBackReference
+    var store: Store? = null,
     @Column(nullable = false)
     val createdAt: Date = Date(),
     @Column(nullable = true)

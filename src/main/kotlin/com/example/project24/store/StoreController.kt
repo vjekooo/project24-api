@@ -1,13 +1,19 @@
 package com.example.project24.store
 
+import com.example.project24.address.Address
+import com.example.project24.address.AddressService
 import com.example.project24.auth.TokenService
-import com.example.project24.user.CustomUserDetails
+import com.example.project24.config.ApiMessageResponse
+import com.example.project24.config.CustomAuthenticationToken
+import com.example.project24.user.User
+import com.example.project24.user.UserService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/api/store")
@@ -19,10 +25,49 @@ class StoreController {
     @Autowired
     lateinit var tokenService: TokenService
 
+    @Autowired
+    lateinit var userService: UserService
+
+    @Autowired
+    lateinit var addressService: AddressService
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    fun createStore(@Valid @RequestBody store: Store) {
+    fun createStore(@Valid @RequestBody store: Store): ResponseEntity<ApiMessageResponse> {
+
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId.toInt()
+
+        val user: Optional<User> = userService.getUserDetails(userId)
+        if (user.isEmpty) {
+            return (
+                    ResponseEntity(
+                        ApiMessageResponse("User not found"),
+                        HttpStatus.BAD_REQUEST
+                    ))
+        }
+
+        val address: Optional<Address> =
+            this.addressService.getAddressByUserId(userId)
+
+        if (address.isEmpty) {
+            return (ResponseEntity(
+                ApiMessageResponse("Address not found"),
+                HttpStatus.BAD_REQUEST
+            ))
+        }
+
+        store.user = user.get()
+        store.address = address.get()
+
         this.storeService.createStore(store)
+
+        return ResponseEntity(
+            ApiMessageResponse("Store created successfully"),
+            HttpStatus.CREATED
+        )
+
     }
 
     @GetMapping("/user")
