@@ -1,5 +1,6 @@
 package com.example.project24.auth
 
+import com.example.project24.config.ApiResponse
 import com.example.project24.user.User
 import com.example.project24.user.UserRepository
 import com.example.project24.user.UserService
@@ -45,7 +46,7 @@ class AuthController(
         @RequestBody user: User,
         request: HttpServletRequest,
         response: HttpServletResponse
-    ): ResponseEntity<String> {
+    ): ResponseEntity<ApiResponse> {
         val appUrl = getBaseUrl(response)
         user.password = BCryptPasswordEncoder().encode(user.password)
         val registered = userRepository.save(user)
@@ -56,7 +57,7 @@ class AuthController(
             )
         )
         return ResponseEntity(
-            "User registered successfully. Check your email for verification link.",
+            ApiResponse("User registered successfully. Check your email for verification link."),
             HttpStatus.CREATED
         )
     }
@@ -90,9 +91,9 @@ class AuthController(
 
         this.verificationTokenService.deleteVerificationToken(user.id)
 
-        val token =
+        val jwtToken =
             authService.authentication(AuthRequest(user.email, user.password))
-        val cookie = this.tokenService.createCookie(token.accessToken)
+        val cookie = this.tokenService.createCookie(jwtToken.accessToken)
         response.addCookie(cookie)
 
         return ResponseEntity(
