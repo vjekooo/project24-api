@@ -2,15 +2,23 @@ package com.example.project24.config
 
 import com.example.project24.user.CustomUserDetailsService
 import com.example.project24.auth.TokenService
+import com.example.project24.user.CustomUserDetails
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+
+class CustomAuthenticationToken(
+    val userId: Long, // Additional userId field
+    principal: Any,
+    credentials: Any?,
+    authorities: Collection<GrantedAuthority>
+) : UsernamePasswordAuthenticationToken(principal, credentials, authorities)
 
 @Component
 class JwtAuthFilter(
@@ -55,10 +63,11 @@ class JwtAuthFilter(
     }
 
     private fun updateContext(
-        foundUser: UserDetails,
+        foundUser: CustomUserDetails,
         request: HttpServletRequest
     ) {
-        val authToken = UsernamePasswordAuthenticationToken(
+        val authToken = CustomAuthenticationToken(
+            userId = foundUser.getUserId(),
             foundUser,
             null,
             foundUser.authorities
