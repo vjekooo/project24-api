@@ -58,6 +58,9 @@ class TokenService(
         getAllClaims(token)
             .subject
 
+    fun extractUserId(token: String): Long =
+        getAllClaims(token).subject.toLong()
+
     fun isExpired(token: String): Boolean =
         getAllClaims(token)
             .expiration

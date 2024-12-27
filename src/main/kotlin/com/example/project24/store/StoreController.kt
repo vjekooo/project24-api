@@ -1,5 +1,6 @@
 package com.example.project24.store
 
+import com.example.project24.auth.TokenService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -13,6 +14,9 @@ class StoreController {
     @Autowired
     lateinit var storeService: StoreService
 
+    @Autowired
+    lateinit var tokenService: TokenService
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     fun createStore(@Valid @RequestBody store: Store) {
@@ -20,8 +24,13 @@ class StoreController {
     }
 
     @GetMapping("/user")
-    fun getUserStores(): ResponseEntity<List<Store>> {
-        val allStores = this.storeService.getUserStores(1)
+    fun getUserStores(@RequestHeader("Authorization") authHeader: String):
+            ResponseEntity<List<Store>> {
+
+        val token = authHeader.removePrefix("Bearer ").trim()
+        val userId = this.tokenService.extractUserId(token)
+        val allStores = this.storeService.getUserStores(userId)
+
         return ResponseEntity(
             allStores ?: emptyList(),
             if (allStores != null) HttpStatus.OK else HttpStatus.NOT_FOUND
