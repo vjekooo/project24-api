@@ -12,4 +12,12 @@ class StoreService {
     fun createStore(store: Store) {
         this.storeRepository.save(store)
     }
+
+    fun getAllStores(): List<Store> {
+        return this.storeRepository.findAll()
+    }
+
+    fun getStoreById(id: Long): Store? {
+        return this.storeRepository.findById(id).orElse(null)
+    }
 }
