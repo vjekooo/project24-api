@@ -39,14 +39,7 @@ class AddressController {
             throw IllegalStateException("User not found")
         }
         address.user = user.get()
-        val created = addressRepository.save(address)
-
-        if (created.id == null) {
-            return ResponseEntity(
-                ApiMessageResponse("Address creation failed"),
-                HttpStatus.BAD_REQUEST
-            )
-        }
+        addressRepository.save(address)
 
         return ResponseEntity(
             ApiMessageResponse("Address created successfully"),
