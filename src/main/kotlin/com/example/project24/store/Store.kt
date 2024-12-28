@@ -4,6 +4,7 @@ import com.example.project24.address.Address
 import com.example.project24.product.Product
 import com.example.project24.user.User
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 import java.util.*
@@ -52,7 +53,7 @@ data class Store(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    var user: User? = null,
+    var user: User,
     @OneToMany(
         mappedBy = "store",
         cascade = [CascadeType.ALL],
@@ -64,9 +65,13 @@ data class Store(
     @Column(nullable = true)
     var updatedAt: Date? = Date()
 ) {
-    constructor() : this(
-        0, "", ""
-    ) {
+
+    @JsonProperty("userId")
+    fun getUserId(): Long {
+        return user.id
+    }
+
+    constructor() : this(0, "", "", listOf(), null, User(), null) {
 
     }
 }

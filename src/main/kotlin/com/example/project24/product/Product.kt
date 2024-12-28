@@ -1,7 +1,6 @@
 package com.example.project24.product
 
 import com.example.project24.store.Store
-import com.example.project24.user.User
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
@@ -17,23 +16,22 @@ data class Product(
     @NotEmpty
     @Column(columnDefinition = "TEXT")
     val description: String,
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(
-        name = "product_images",
-        joinColumns = [JoinColumn(name = "product_id")]
+        name = "product_image",
+        joinColumns = [JoinColumn(name = "product_id")],
     )
-    @Column(name = "image_url")
-    val images: List<String> = emptyList(),
+    val image: List<String>? = listOf(),
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     @JsonIgnore
-    var store: Store? = null,
+    var store: Store,
     @Column(nullable = false)
     val createdAt: Date = Date(),
     @Column(nullable = true)
     var updatedAt: Date? = Date()
 ) {
-    constructor() : this(0, "", "", emptyList()) {
+    constructor() : this(0, "", "", emptyList(), Store()) {
 
     }
 }

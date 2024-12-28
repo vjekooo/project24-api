@@ -77,10 +77,11 @@ class StoreController {
     }
 
     @GetMapping("/{id}")
-    fun getStoreById(@PathVariable id: Long): ResponseEntity<Store> {
+    fun getStoreById(@PathVariable id: Long): ResponseEntity<StoreDTO> {
         val store = this.storeService.getStoreById(id)
         return if (store != null) {
-            ResponseEntity.ok(store)
+            val storeDTO = mapToStoreDTO(store)
+            ResponseEntity.ok(storeDTO)
         } else {
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }

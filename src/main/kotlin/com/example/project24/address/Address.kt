@@ -33,5 +33,5 @@ data class Address(
     @Column(nullable = true)
     var updatedAt: Date? = Date()
 ) {
-    constructor() : this(0, "", "", "", "", User())
+    constructor() : this(0, "", "", "", "")
 }

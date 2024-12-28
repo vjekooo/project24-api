@@ -12,4 +12,8 @@ class ProductService {
     fun createProduct(product: Product): Product {
         return this.productRepository.save(product)
     }
+
+    fun getProductsByStoreId(id: Long): List<Product> {
+        return this.productRepository.findAllByStoreId(id)
+    }
 }
