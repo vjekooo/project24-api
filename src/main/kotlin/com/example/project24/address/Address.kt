@@ -2,7 +2,7 @@ package com.example.project24.address
 
 import com.example.project24.store.Store
 import com.example.project24.user.User
-import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 import java.util.*
@@ -22,11 +22,11 @@ data class Address(
     val postalCode: String,
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonIgnore
     var user: User? = null,
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    @JsonBackReference
+    @JsonIgnore
     var store: Store? = null,
     @Column(nullable = false)
     val createdAt: Date = Date(),
