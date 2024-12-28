@@ -1,6 +1,7 @@
 package com.example.project24.store
 
 import com.example.project24.address.Address
+import com.example.project24.product.Product
 import com.example.project24.user.User
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
@@ -30,6 +31,7 @@ data class Store(
     @NotEmpty
     val name: String,
     @NotEmpty
+    @Column(columnDefinition = "TEXT")
     val description: String,
     @ElementCollection
     @CollectionTable(
@@ -51,6 +53,12 @@ data class Store(
     @JoinColumn(name = "user_id")
     @JsonIgnore
     var user: User? = null,
+    @OneToMany(
+        mappedBy = "store",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    val product: List<Product>? = null,
     @Column(nullable = false)
     val createdAt: Date = Date(),
     @Column(nullable = true)
