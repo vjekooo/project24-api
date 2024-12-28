@@ -43,7 +43,7 @@ class AddressController {
 
         if (created.id == null) {
             return ResponseEntity(
-                ApiMessageResponse("User registered successfully. Check your email for verification link."),
+                ApiMessageResponse("Address creation failed"),
                 HttpStatus.BAD_REQUEST
             )
         }
