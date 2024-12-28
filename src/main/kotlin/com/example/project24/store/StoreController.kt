@@ -1,7 +1,5 @@
 package com.example.project24.store
 
-import com.example.project24.address.Address
-import com.example.project24.address.AddressService
 import com.example.project24.auth.TokenService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
@@ -28,7 +26,7 @@ class StoreController {
     @Autowired
     lateinit var userService: UserService
 
-    @PostMapping("", consumes = ["application/json"])
+    @PostMapping("")
     fun createStore(@Valid @RequestBody store: Store): ResponseEntity<ApiMessageResponse> {
 
         val authentication = SecurityContextHolder.getContext()

@@ -27,7 +27,7 @@ class AddressController {
     lateinit var userService: UserService
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("", consumes = ["application/json"])
+    @PostMapping("")
     fun create(@Valid @RequestBody address: Address): ResponseEntity<ApiMessageResponse> {
         println(address)
         val authentication = SecurityContextHolder.getContext()
