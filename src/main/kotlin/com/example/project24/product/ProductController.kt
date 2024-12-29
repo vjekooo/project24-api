@@ -18,9 +18,8 @@ class ProductController {
     lateinit var storeService: StoreService
 
     @PostMapping("")
-    fun createProduct(@RequestBody product: ProductDTO):
+    fun createProduct(@Valid @RequestBody product: ProductDTO):
             ResponseEntity<ApiMessageResponse> {
-        println(product)
 
         val store = this.storeService.getStoreById(product.storeId)
 
@@ -46,8 +45,12 @@ class ProductController {
 
     @GetMapping("/{storeId}")
     fun getAllStoreProducts(@PathVariable storeId: Long):
-            ResponseEntity<List<Product>> {
+            ResponseEntity<List<ProductDTO>> {
         val products = this.productService.getProductsByStoreId(storeId)
-        return ResponseEntity.ok(products)
+
+        val productsDTO =
+            products.map { product -> mapToProductDTO(product) }
+
+        return ResponseEntity.ok(productsDTO)
     }
 }
