@@ -63,7 +63,7 @@ class ProductController {
         return ResponseEntity.ok(productsDTO)
     }
 
-    @PostMapping("/favorite")
+    @PostMapping("/toggle-favorite")
     fun addProductToFavorites(@Valid @RequestBody favoriteProduct: FavoriteProductDTO):
             ResponseEntity<ApiMessageResponse> {
 
@@ -75,8 +75,18 @@ class ProductController {
 
         val product = FavoriteProduct(0, favoriteProduct.productId, user.get())
 
-        this.favoriteProductService.saveFavorite(product)
-        return ResponseEntity.ok(ApiMessageResponse("Product added to favorites"))
+        val favorite =
+            this.favoriteProductService.getFavoriteByProductId(product.productId)
+
+        if (favorite != null) {
+            this.favoriteProductService.deleteFavoriteByProductId(product.productId)
+            return ResponseEntity.ok(ApiMessageResponse("Product removed from favorites"))
+        } else {
+            this.favoriteProductService.saveFavorite(
+                product
+            )
+            return ResponseEntity.ok(ApiMessageResponse("Product added to favorites"))
+        }
     }
 
     @GetMapping("/favorites")
