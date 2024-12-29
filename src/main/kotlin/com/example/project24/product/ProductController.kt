@@ -101,4 +101,10 @@ class ProductController {
             )
         })
     }
+
+    @DeleteMapping("/{productId}")
+    fun deleteProduct(@PathVariable productId: String): ResponseEntity<ApiMessageResponse> {
+        this.productService.deleteProductById(productId.toInt())
+        return ResponseEntity.ok(ApiMessageResponse("Product deleted successfully"))
+    }
 }

@@ -16,4 +16,8 @@ class ProductService {
     fun getProductsByStoreId(id: Long): List<Product> {
         return this.productRepository.findAllByStoreId(id)
     }
+
+    fun deleteProductById(id: Int) {
+        return this.productRepository.deleteById(id)
+    }
 }
