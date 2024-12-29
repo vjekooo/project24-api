@@ -3,6 +3,10 @@ package com.example.project24.store
 import com.example.project24.auth.TokenService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
+import com.example.project24.product.FavoriteProduct
+import com.example.project24.product.FavoriteProductDTO
+import com.example.project24.product.FavoriteProductService
+import com.example.project24.product.mapToFavoriteProductDTO
 import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -25,6 +29,9 @@ class StoreController {
 
     @Autowired
     lateinit var userService: UserService
+
+    @Autowired
+    lateinit var favoriteStoreService: FavoriteStoreService
 
     @PostMapping("")
     fun createStore(@Valid @RequestBody store: Store): ResponseEntity<ApiMessageResponse> {
@@ -86,5 +93,47 @@ class StoreController {
         } else {
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }
+    }
+
+    @PostMapping("/toggle-favorite")
+    fun addProductToFavorites(
+        @Valid @RequestBody favoriteStore:
+        FavoriteStoreDTO
+    ):
+            ResponseEntity<ApiMessageResponse> {
+
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId.toInt()
+
+        val user = this.userService.getUserDetails(userId)
+
+        val store = FavoriteStore(0, favoriteStore.storeId, user.get())
+
+        val favorite =
+            this.favoriteStoreService.getFavoriteByProductId(store.storeId)
+
+        if (favorite != null) {
+            this.favoriteStoreService.deleteFavoriteByStoreId(store.storeId)
+            return ResponseEntity.ok(ApiMessageResponse("Product removed from favorites"))
+        } else {
+            this.favoriteStoreService.saveFavorite(
+                store
+            )
+            return ResponseEntity.ok(ApiMessageResponse("Product added to favorites"))
+        }
+    }
+
+    @GetMapping("/favorites")
+    fun getFavoriteProducts(): ResponseEntity<List<FavoriteStoreDTO>> {
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId
+        val favorites = this.favoriteStoreService.getAllUserFavorites(userId)
+        return ResponseEntity.ok(favorites.map { favorite ->
+            mapToFavoriteStoreDTO(
+                favorite
+            )
+        })
     }
 }
