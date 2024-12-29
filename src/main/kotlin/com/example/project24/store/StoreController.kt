@@ -71,9 +71,10 @@ class StoreController {
         )
     }
 
-    @GetMapping("")
-    fun getAllStores() {
-        this.storeService.getAllStores()
+    @GetMapping("/all")
+    fun getAllStores(): ResponseEntity<List<Store>> {
+        val stores = this.storeService.getAllStores()
+        return ResponseEntity.ok(stores)
     }
 
     @GetMapping("/{id}")

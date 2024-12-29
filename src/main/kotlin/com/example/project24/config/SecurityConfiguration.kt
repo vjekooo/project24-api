@@ -42,7 +42,8 @@ class SecurityConfiguration(
                     .requestMatchers(
                         "/api/auth/login",
                         "/api/auth/register",
-                        "/api/auth/confirm-registration"
+                        "/api/auth/confirm-registration",
+                        "/api/store/all",
                     )
                     .permitAll()
                     .anyRequest().authenticated();
