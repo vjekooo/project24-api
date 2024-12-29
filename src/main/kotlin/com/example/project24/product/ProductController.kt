@@ -1,10 +1,13 @@
 package com.example.project24.product
 
 import com.example.project24.config.ApiMessageResponse
+import com.example.project24.config.CustomAuthenticationToken
 import com.example.project24.store.StoreService
+import com.example.project24.user.UserService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +19,12 @@ class ProductController {
 
     @Autowired
     lateinit var storeService: StoreService
+
+    @Autowired
+    lateinit var favoriteProductService: FavoriteProductService
+
+    @Autowired
+    lateinit var userService: UserService
 
     @PostMapping("")
     fun createProduct(@Valid @RequestBody product: ProductDTO):
@@ -52,5 +61,34 @@ class ProductController {
             products.map { product -> mapToProductDTO(product) }
 
         return ResponseEntity.ok(productsDTO)
+    }
+
+    @PostMapping("/favorite")
+    fun addProductToFavorites(@Valid @RequestBody favoriteProduct: FavoriteProductDTO):
+            ResponseEntity<ApiMessageResponse> {
+
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId.toInt()
+
+        val user = this.userService.getUserDetails(userId)
+
+        val product = FavoriteProduct(0, favoriteProduct.productId, user.get())
+
+        this.favoriteProductService.saveFavorite(product)
+        return ResponseEntity.ok(ApiMessageResponse("Product added to favorites"))
+    }
+
+    @GetMapping("/favorites")
+    fun getFavoriteProducts(): ResponseEntity<List<FavoriteProductDTO>> {
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId
+        val favorites = this.favoriteProductService.getAllUserFavorites(userId)
+        return ResponseEntity.ok(favorites.map { favorite ->
+            mapToFavoriteProductDTO(
+                favorite
+            )
+        })
     }
 }

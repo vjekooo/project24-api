@@ -1,6 +1,7 @@
 package com.example.project24.user
 
 import com.example.project24.address.Address
+import com.example.project24.product.FavoriteProduct
 import com.example.project24.store.Store
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
@@ -39,6 +40,12 @@ data class User(
         orphanRemoval = true
     )
     val store: List<Store>? = null,
+    @OneToMany(
+        mappedBy = "user",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
+    )
+    val favorite: List<FavoriteProduct>? = null,
     @Column(nullable = false)
     val createdAt: Date = Date(),
     @Column(nullable = true)
