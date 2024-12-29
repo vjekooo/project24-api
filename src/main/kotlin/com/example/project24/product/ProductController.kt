@@ -49,7 +49,29 @@ class ProductController {
                 )
             )
         }
+    }
 
+    @PutMapping("")
+    fun updateProduct(@Valid @RequestBody product: ProductDTO): ResponseEntity<ApiMessageResponse> {
+        val store = this.storeService.getStoreById(product.storeId)
+
+        if (store == null) {
+            return ResponseEntity.badRequest().body(
+                ApiMessageResponse("Store not found")
+            )
+        } else {
+            val mappedProduct = mapToProduct(product)
+            mappedProduct.store = store
+
+            this.productService.createProduct(mappedProduct)
+
+            return ResponseEntity.ok(
+                ApiMessageResponse(
+                    "Product created " +
+                            "successfully"
+                )
+            )
+        }
     }
 
     @GetMapping("/{storeId}")

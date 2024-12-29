@@ -7,17 +7,28 @@ import org.springframework.stereotype.Service
 class ProductService {
 
     @Autowired
-    lateinit var productRepository: ProductRepository
+    lateinit var repository: ProductRepository
 
     fun createProduct(product: Product): Product {
-        return this.productRepository.save(product)
+        return this.repository.save(product)
+    }
+
+    fun updateProduct(product: Product) {
+        val existing = repository.findById(product.id.toInt())
+
+        if (existing.isPresent) {
+            repository.save(product)
+        } else {
+            throw IllegalArgumentException("Product with id ${product.id} does not exist")
+        }
+
     }
 
     fun getProductsByStoreId(id: Long): List<Product> {
-        return this.productRepository.findAllByStoreId(id)
+        return this.repository.findAllByStoreId(id)
     }
 
     fun deleteProductById(id: Int) {
-        return this.productRepository.deleteById(id)
+        return this.repository.deleteById(id)
     }
 }
