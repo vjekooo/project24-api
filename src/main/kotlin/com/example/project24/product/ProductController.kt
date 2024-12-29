@@ -63,7 +63,7 @@ class ProductController {
             val mappedProduct = mapToProduct(product)
             mappedProduct.store = store
 
-            this.productService.createProduct(mappedProduct)
+            this.productService.updateProduct(mappedProduct)
 
             return ResponseEntity.ok(
                 ApiMessageResponse(

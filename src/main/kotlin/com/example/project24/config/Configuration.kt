@@ -49,7 +49,7 @@ class Configuration {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf(corsOriginPatterns)
         configuration.allowedMethods =
-            listOf("GET", "POST", "PUT", "DELETE")
+            listOf("GET", "POST", "PUT", "DELETE", "PATCH")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
         val source: UrlBasedCorsConfigurationSource =
