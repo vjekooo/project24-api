@@ -86,7 +86,7 @@ class ProductController {
     }
 
     @PostMapping("/toggle-favorite")
-    fun addProductToFavorites(@Valid @RequestBody favoriteProduct: FavoriteProductDTO):
+    fun toggleProductToFavorite(@Valid @RequestBody favoriteProduct: FavoriteProductDTO):
             ResponseEntity<ApiMessageResponse> {
 
         val authentication = SecurityContextHolder.getContext()

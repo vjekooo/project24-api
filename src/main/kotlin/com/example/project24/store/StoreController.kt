@@ -3,10 +3,6 @@ package com.example.project24.store
 import com.example.project24.auth.TokenService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
-import com.example.project24.product.FavoriteProduct
-import com.example.project24.product.FavoriteProductDTO
-import com.example.project24.product.FavoriteProductService
-import com.example.project24.product.mapToFavoriteProductDTO
 import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -96,7 +92,7 @@ class StoreController {
     }
 
     @PostMapping("/toggle-favorite")
-    fun addProductToFavorites(
+    fun toggleStoreFavorite(
         @Valid @RequestBody favoriteStore:
         FavoriteStoreDTO
     ):
