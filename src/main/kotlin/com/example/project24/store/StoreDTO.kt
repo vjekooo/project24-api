@@ -1,6 +1,8 @@
 package com.example.project24.store
 
 import com.example.project24.address.Address
+import com.example.project24.media.MediaDTO
+import com.example.project24.media.mapToMediaDTO
 import com.example.project24.product.Product
 import java.util.*
 
@@ -8,7 +10,7 @@ data class StoreDTO(
     val id: Long,
     val name: String,
     val description: String,
-    val media: List<Media>?,
+    val media: List<MediaDTO>?,
     val address: Address?,
     val userId: Long,
     val products: List<Product>?,
@@ -21,7 +23,7 @@ fun mapToStoreDTO(store: Store): StoreDTO {
         id = store.id,
         name = store.name,
         description = store.description,
-        media = store.media,
+        media = store.media?.map { mapToMediaDTO(it) } ?: emptyList(),
         address = store.address,
         userId = store.user.id,
         products = store.product,

@@ -1,6 +1,7 @@
 package com.example.project24.store
 
 import com.example.project24.address.Address
+import com.example.project24.media.Media
 import com.example.project24.user.Role
 import com.example.project24.user.User
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -34,14 +35,14 @@ class StoreControllerTest {
         val address = Address(
             1, "Test Street", "1", "TS", "12345",
         )
-        val media = listOf(
+        val media = mutableListOf(
             Media(
-                "http://example.com/image1.jpg", com.example.project24
-                    .store.StoreMediaType.IMAGE
+                0L,
+                "http://example.com/image1.jpg",
             ),
             Media(
-                "http://example.com/image2.jpg", com.example.project24
-                    .store.StoreMediaType.IMAGE
+                0L,
+                "http://example.com/image2.jpg",
             )
         )
         val user = User(1, "<EMAIL>", "John", "Doe", "12345678", Role.USER, true, null, null)

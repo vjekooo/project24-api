@@ -12,5 +12,16 @@ private val log: Logger = LoggerFactory.getLogger(Application::class.java)
 
 fun main(args: Array<String>) {
     log.info("Starting application")
-    runApplication<Application>(*args)
+    try {
+        runApplication<Application>(*args)
+        log.info("Application started successfully")
+    } catch (ex: Exception) {
+        if(ex.javaClass.name.contains("SilentExitException")) {
+            log.error("Spring is restarting the main thread - See " +
+                    "spring-boot-devtools");
+            return
+        }
+        log.error("Application failed to start: ${ex.message}", ex)
+        throw ex
+    }
 }

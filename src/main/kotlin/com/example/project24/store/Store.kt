@@ -1,6 +1,7 @@
 package com.example.project24.store
 
 import com.example.project24.address.Address
+import com.example.project24.media.Media
 import com.example.project24.product.Product
 import com.example.project24.user.User
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -8,21 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 import java.util.*
-
-enum class StoreMediaType {
-    IMAGE,
-    VIDEO
-}
-
-@Embeddable
-data class Media(
-    @NotEmpty
-    val url: String,
-    @NotEmpty
-    val type: StoreMediaType
-) {
-    constructor() : this("", StoreMediaType.IMAGE)
-}
 
 @Entity
 data class Store(
@@ -34,21 +20,14 @@ data class Store(
     @NotEmpty
     @Column(columnDefinition = "TEXT")
     val description: String,
-    @ElementCollection
-    @CollectionTable(
-        name = "store_media",
-        joinColumns = [JoinColumn(name = "store_id")],
-    )
-    @AttributeOverrides(
-        AttributeOverride(name = "url", column = Column(name = "url")),
-        AttributeOverride(name = "type", column = Column(name = "type"))
-    )
-    val media: List<Media>? = listOf(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    val media: MutableList<Media>? = mutableListOf(),
     @OneToOne(
-        mappedBy = "store",
         cascade = [CascadeType.ALL],
         orphanRemoval = true
     )
+    @JoinColumn(name = "address_id")
     var address: Address? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -71,7 +50,7 @@ data class Store(
         return user.id
     }
 
-    constructor() : this(0, "", "", listOf(), null, User(), null) {
+    constructor() : this(0, "", "", mutableListOf(), null, User(), null) {
 
     }
 }

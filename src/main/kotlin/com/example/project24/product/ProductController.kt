@@ -37,7 +37,7 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapToProduct(product)
+            val mappedProduct = mapToProduct(product, store)
             mappedProduct.store = store
 
             this.productService.createProduct(mappedProduct)
@@ -60,7 +60,7 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapToProduct(product)
+            val mappedProduct = mapToProduct(product, store)
             mappedProduct.store = store
 
             this.productService.updateProduct(mappedProduct)

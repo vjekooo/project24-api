@@ -1,5 +1,6 @@
 package com.example.project24.product
 
+import com.example.project24.media.Media
 import com.example.project24.store.Store
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
@@ -17,12 +18,9 @@ data class Product(
     @NotEmpty
     @Column(columnDefinition = "TEXT")
     val description: String,
-    @ElementCollection
-    @CollectionTable(
-        name = "product_image",
-        joinColumns = [JoinColumn(name = "product_id")],
-    )
-    val image: List<String>? = listOf(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    val media: MutableList<Media>? = mutableListOf(),
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     @JsonIgnore
@@ -32,11 +30,13 @@ data class Product(
     @Column(nullable = true)
     val discount: Double? = null,
     @Column(nullable = false)
+    var isFeatured: Boolean = false,
+    @Column(nullable = false)
     val createdAt: Date = Date(),
     @Column(nullable = true)
     var updatedAt: Date? = Date()
 ) {
-    constructor() : this(0, "", "", emptyList(), Store(), BigDecimal.ZERO) {
+    constructor() : this(0, "", "", mutableListOf(), Store(), BigDecimal.ZERO) {
 
     }
 
