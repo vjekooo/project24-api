@@ -1,6 +1,8 @@
 package com.example.project24.store
 
 import com.example.project24.address.Address
+import com.example.project24.user.Role
+import com.example.project24.user.User
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -35,19 +37,21 @@ class StoreControllerTest {
         val media = listOf(
             Media(
                 "http://example.com/image1.jpg", com.example.project24
-                    .store.MediaType.IMAGE
+                    .store.StoreMediaType.IMAGE
             ),
             Media(
                 "http://example.com/image2.jpg", com.example.project24
-                    .store.MediaType.IMAGE
+                    .store.StoreMediaType.IMAGE
             )
         )
+        val user = User(1, "<EMAIL>", "John", "Doe", "12345678", Role.USER, true, null, null)
         val store = Store(
-            id = 0,
-            name = "Test Store",
-            description = "A test store description",
-            media = media,
-            address = address
+            0,
+            "Test Store",
+            "A test store description",
+            media,
+            address,
+            user
         )
         `when`(storeService.createStore(store)).then { /* Do nothing */ }
 
