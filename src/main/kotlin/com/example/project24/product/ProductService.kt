@@ -14,7 +14,7 @@ class ProductService {
     }
 
     fun updateProduct(product: Product) {
-        val existing = repository.findById(product.id.toInt())
+        val existing = repository.findById(product.id)
 
         if (existing.isPresent) {
             repository.save(product)
@@ -28,7 +28,15 @@ class ProductService {
         return this.repository.findAllByStoreId(id)
     }
 
-    fun deleteProductById(id: Int) {
+    fun getProductById(id: Long): Product? {
+        return this.repository.findById(id).orElse(null)
+    }
+
+    fun getRelatedProducts(id: Long): List<Product> {
+        return this.repository.findAllByStoreId(id)
+    }
+
+    fun deleteProductById(id: Long) {
         return this.repository.deleteById(id)
     }
 }

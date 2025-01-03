@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProductRepository : JpaRepository<Product, Int> {
+interface ProductRepository : JpaRepository<Product, Long> {
     @Query(
         value = "SELECT p FROM Product p WHERE p.store.id = :storeId"
     )

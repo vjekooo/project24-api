@@ -13,4 +13,15 @@ interface StoreRepository : JpaRepository<Store, Long> {
         nativeQuery = true
     )
     fun findAllByUserId(@Param("id") id: Long): List<Store>?
+
+    @Query(
+        value = """
+        SELECT s.* 
+        FROM store s
+        JOIN product p ON p.store_id = s.id
+        WHERE p.id = :productId
+    """,
+        nativeQuery = true
+    )
+    fun findByProductId(productId: Long): Store?
 }

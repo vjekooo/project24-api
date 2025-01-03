@@ -74,7 +74,7 @@ class ProductController {
         }
     }
 
-    @GetMapping("/{storeId}")
+    @GetMapping("/store/{storeId}")
     fun getAllStoreProducts(@PathVariable storeId: Long):
             ResponseEntity<List<ProductDTO>> {
         val products = this.productService.getProductsByStoreId(storeId)
@@ -83,6 +83,27 @@ class ProductController {
             products.map { product -> mapToProductDTO(product) }
 
         return ResponseEntity.ok(productsDTO)
+    }
+
+    @GetMapping("/{productId}")
+    fun getProductBy(@PathVariable productId: Long):
+            ResponseEntity<ProductDTO> {
+        val product = this.productService.getProductById(productId)
+        val mappedProduct = product?.let { mapToProductDTO(it) }
+
+        return ResponseEntity.ok(mappedProduct)
+    }
+
+    @GetMapping("/{productId}/related-products")
+    fun getRelatedStores(@PathVariable productId: Long):
+            ResponseEntity<List<ProductDTO>> {
+
+        val currentProduct = this.productService.getProductById(productId)
+        val store = currentProduct?.store ?: return ResponseEntity.notFound().build()
+        val relatedProducts = store.product?.filter { it.id != productId } ?: emptyList()
+        val mappedProducts = relatedProducts.map { product -> mapToProductDTO(product) }
+
+        return ResponseEntity.ok(mappedProducts)
     }
 
     @PostMapping("/toggle-favorite")
@@ -125,8 +146,9 @@ class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    fun deleteProduct(@PathVariable productId: String): ResponseEntity<ApiMessageResponse> {
-        this.productService.deleteProductById(productId.toInt())
+    fun deleteProduct(@PathVariable productId: Long):
+            ResponseEntity<ApiMessageResponse> {
+        this.productService.deleteProductById(productId)
         return ResponseEntity.ok(ApiMessageResponse("Product deleted successfully"))
     }
 }

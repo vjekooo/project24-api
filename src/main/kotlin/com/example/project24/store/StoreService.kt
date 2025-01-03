@@ -24,4 +24,8 @@ class StoreService {
     fun getStoreById(id: Long): Store? {
         return this.storeRepository.findById(id).orElse(null)
     }
+
+    fun getStoreByProductId(productId: Long): Store? {
+        return this.storeRepository.findByProductId(productId)
+    }
 }
