@@ -1,8 +1,10 @@
 package com.example.project24.store
 
 import com.example.project24.auth.TokenService
+import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
+import com.example.project24.media.Media
 import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -29,8 +31,12 @@ class StoreController {
     @Autowired
     lateinit var favoriteStoreService: FavoriteStoreService
 
+    @Autowired
+    lateinit var categoryService: CategoryService
+
     @PostMapping("")
-    fun createStore(@Valid @RequestBody store: Store): ResponseEntity<ApiMessageResponse> {
+    fun createStore(@Valid @RequestBody store: StoreRequest):
+            ResponseEntity<ApiMessageResponse> {
 
         val authentication = SecurityContextHolder.getContext()
             .authentication as CustomAuthenticationToken
@@ -44,10 +50,29 @@ class StoreController {
             )
         }
 
-        store.user = user.get()
-        store.address = user.get().address
+        val address = user.get().address ?: return ResponseEntity(
+            ApiMessageResponse("User address is not set"),
+            HttpStatus.BAD_REQUEST
+        )
 
-        this.storeService.createStore(store)
+        val newStore = Store(
+            0,
+            store.name,
+            store.description,
+            store.image.map { Media(0, it) }.toMutableList(),
+            address,
+            user.get()
+        )
+       
+        val category = categoryService.getCategoryById(store.categoryId)
+            ?: return ResponseEntity(
+                ApiMessageResponse("Category not found"),
+                HttpStatus.BAD_REQUEST
+            )
+
+        newStore.categories = mutableSetOf(category)
+
+        this.storeService.createStore(newStore)
 
         return ResponseEntity(
             ApiMessageResponse("Store created successfully"),

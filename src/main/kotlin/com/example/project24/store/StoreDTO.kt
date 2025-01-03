@@ -14,6 +14,7 @@ data class StoreDTO(
     val address: Address?,
     val userId: Long,
     val products: List<Product>?,
+    val categories: List<String>?,
     val createdAt: Date,
     val updatedAt: Date?
 )
@@ -27,6 +28,7 @@ fun mapToStoreDTO(store: Store): StoreDTO {
         address = store.address,
         userId = store.user.id,
         products = store.product,
+        categories = store.categories?.map { it.name } ?: emptyList(),
         createdAt = store.createdAt,
         updatedAt = store.updatedAt
     )
