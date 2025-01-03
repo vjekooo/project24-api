@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotEmpty
 import java.util.*
 
 @Entity
-data class Address(
+class Address(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     val id: Long,

@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import java.util.*
 
 @Entity
-data class VerificationToken(
+class VerificationToken(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,

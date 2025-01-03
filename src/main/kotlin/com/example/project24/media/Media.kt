@@ -7,7 +7,7 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.NotEmpty
 
 @Entity
-data class Media(
+class Media(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,

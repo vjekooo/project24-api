@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
-data class FavoriteStore(
+class FavoriteStore(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,

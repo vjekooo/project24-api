@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotEmpty
 import java.util.*
 
 @Entity
-data class Store(
+class Store(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,

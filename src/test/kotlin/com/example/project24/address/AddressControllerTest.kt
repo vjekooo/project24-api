@@ -1,10 +1,9 @@
 package com.example.project24.address
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.example.project24.user.UserService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -24,34 +23,10 @@ class AddressControllerTest {
     private lateinit var objectMapper: ObjectMapper
 
     @MockBean
-    private lateinit var addressRepository: AddressRepository
+    private lateinit var userService: UserService
 
-    @Test
-    fun `should create a new address when valid input is provided`() {
-        // Arrange
-        val address = Address(
-            id = 0,
-            street = "Test Street",
-            houseNumber = "123A",
-            city = "Test City",
-            postalCode = "12345"
-        )
-        `when`(addressRepository.save(address.copy(id = 0))).thenReturn(
-            address.copy(
-                id = 1
-            )
-        )
-
-        // Act
-        val result = mockMvc.post("/api/address") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(address)
-        }.andReturn()
-
-        // Assert
-        assertEquals(201, result.response.status)
-        verify(addressRepository).save(address.copy(id = 0))
-    }
+    @MockBean
+    private lateinit var addressService: AddressService
 
     @Test
     fun `should return 400 when street is missing`() {
@@ -114,6 +89,27 @@ class AddressControllerTest {
 
         // Assert
         assertEquals(400, result.response.status)
+    }
+
+    @Test
+    fun `should return 401 when unauthorized`() {
+        // Arrange
+        val address = Address(
+            id = 0,
+            street = "Test Street",
+            houseNumber = "123A",
+            city = "Test City",
+            postalCode = "12345"
+        )
+
+        // Act
+        val result = mockMvc.post("/api/address") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(address)
+        }.andReturn()
+
+        // Assert
+        assertEquals(401, result.response.status)
     }
 
     @Test

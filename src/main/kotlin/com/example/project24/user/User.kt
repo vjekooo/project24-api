@@ -15,7 +15,7 @@ enum class Role {
 @Table(
     name = "users",
 )
-data class User(
+class User(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id: Long,

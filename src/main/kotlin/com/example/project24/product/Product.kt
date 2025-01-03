@@ -9,7 +9,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @Entity
-data class Product(
+class Product(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,
