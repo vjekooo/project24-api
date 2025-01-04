@@ -24,4 +24,12 @@ interface StoreRepository : JpaRepository<Store, Long> {
         nativeQuery = true
     )
     fun findByProductId(productId: Long): Store?
+
+    @Query("""
+    SELECT s FROM Store s 
+    JOIN s.categories c
+    WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) 
+       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+""")
+    fun searchStores(@Param("searchTerm") searchTerm: String): List<Store>
 }
