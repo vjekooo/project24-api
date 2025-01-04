@@ -22,12 +22,12 @@ class SearchController() {
        return ResponseEntity.ok(result)
    }
 
-   @GetMapping("/search/products")
+   @GetMapping("/products")
    fun searchProducts(@RequestParam searchTerm: String): List<Product> {
        return searchService.searchProducts(searchTerm)
    }
 
-   @GetMapping("/search/stores")
+   @GetMapping("/stores")
    fun searchStores(@RequestParam searchTerm: String): List<Store> {
        return searchService.searchStores(searchTerm)
    }
