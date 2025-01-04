@@ -14,8 +14,8 @@ data class ProductDTO(
     val storeId: Long,
     val price: BigDecimal,
     val discount: Double?,
-    val finalPrice: BigDecimal,
-    val isFeatured: Boolean
+    val finalPrice: BigDecimal?,
+    val isFeatured: Boolean?
 )
 
 fun mapToProductDTO(product: Product): ProductDTO {
