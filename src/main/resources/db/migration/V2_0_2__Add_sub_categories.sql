@@ -1,0 +1,5 @@
+ALTER TABLE category
+    ADD parent_id BIGINT;
+
+ALTER TABLE category
+    ADD CONSTRAINT FK_CATEGORY_ON_PARENT FOREIGN KEY (parent_id) REFERENCES category (id);
