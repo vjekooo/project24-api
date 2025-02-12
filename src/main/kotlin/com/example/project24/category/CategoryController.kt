@@ -34,7 +34,6 @@ class CategoryController {
                 subCategories = subCategories[root.id].orEmpty()
             )
         }
-        
         return ResponseEntity.ok(categoryWithSubs)
     }
 }

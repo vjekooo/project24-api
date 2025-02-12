@@ -157,4 +157,11 @@ class StoreController {
             )
         })
     }
+
+    @GetMapping("/{id}/related-stores")
+    fun getRelatedStores(@PathVariable id: Long): ResponseEntity<List<StoreDTO>> {
+        val stores = this.storeService.getAllStores().filter { it.id != id }
+        return ResponseEntity.ok(stores.map { store -> mapToStoreDTO(store)
+        })
+    }
 }
