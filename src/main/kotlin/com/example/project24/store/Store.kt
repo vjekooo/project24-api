@@ -47,13 +47,13 @@ class Store(
     )
     val product: List<Product>? = null,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinTable(
         name = "store_category",
         joinColumns = [JoinColumn(name = "store_id")],
         inverseJoinColumns = [JoinColumn(name = "category_id")]
     )
-    var categories: MutableSet<Category>? = mutableSetOf(),
+    var category: MutableSet<Category> = mutableSetOf(),
 
     @Column(nullable = false)
     val createdAt: Date = Date(),

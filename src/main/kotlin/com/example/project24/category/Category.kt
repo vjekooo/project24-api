@@ -1,7 +1,8 @@
 package com.example.project24.category
 
+import com.example.project24.product.Product
+import com.example.project24.store.Store
 import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -25,9 +26,12 @@ class Category(
     @JsonBackReference
     var parent: Category? = null,
 
-    @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JsonManagedReference
-    var subCategories: MutableSet<Category> = mutableSetOf()
+    @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    var store: MutableSet<Store> = mutableSetOf(),
+
+    @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    var product: MutableSet<Product> = mutableSetOf()
+
 ) {
     constructor() : this(0, "",) {
 

@@ -1,5 +1,6 @@
 package com.example.project24.product
 
+import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
 import com.example.project24.store.StoreService
@@ -26,8 +27,11 @@ class ProductController {
     @Autowired
     lateinit var userService: UserService
 
+    @Autowired
+    lateinit var categoryService: CategoryService
+
     @PostMapping("")
-    fun createProduct(@Valid @RequestBody product: ProductDTO):
+    fun createProduct(@Valid @RequestBody product: ProductRequest):
             ResponseEntity<ApiMessageResponse> {
 
         val store = this.storeService.getStoreById(product.storeId)
@@ -37,7 +41,7 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapToProduct(product, store)
+            val mappedProduct = mapRequestToProduct(product, store, categoryService)
             mappedProduct.store = store
 
             this.productService.createProduct(mappedProduct)
@@ -52,7 +56,8 @@ class ProductController {
     }
 
     @PutMapping("")
-    fun updateProduct(@Valid @RequestBody product: ProductDTO): ResponseEntity<ApiMessageResponse> {
+    fun updateProduct(@Valid @RequestBody product: ProductRequest):
+            ResponseEntity<ApiMessageResponse> {
         val store = this.storeService.getStoreById(product.storeId)
 
         if (store == null) {
@@ -60,7 +65,7 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapToProduct(product, store)
+            val mappedProduct = mapRequestToProduct(product, store, categoryService)
             mappedProduct.store = store
 
             this.productService.updateProduct(mappedProduct)
@@ -94,7 +99,7 @@ class ProductController {
         return ResponseEntity.ok(mappedProduct)
     }
 
-    @GetMapping("/{productId}/related-products")
+    @GetMapping("/{productId}/related")
     fun getRelatedStores(@PathVariable productId: Long):
             ResponseEntity<List<ProductDTO>> {
 
@@ -132,7 +137,7 @@ class ProductController {
         }
     }
 
-    @GetMapping("/favorites")
+    @GetMapping("/favorite")
     fun getFavoriteProducts(): ResponseEntity<List<FavoriteProductDTO>> {
         val authentication = SecurityContextHolder.getContext()
             .authentication as CustomAuthenticationToken

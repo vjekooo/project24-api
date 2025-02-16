@@ -70,7 +70,7 @@ class StoreController {
                 HttpStatus.BAD_REQUEST
             )
 
-        newStore.categories = mutableSetOf(category)
+        newStore.category = mutableSetOf(category)
 
         this.storeService.createStore(newStore)
 
@@ -145,7 +145,7 @@ class StoreController {
         }
     }
 
-    @GetMapping("/favorites")
+    @GetMapping("/favorite")
     fun getFavoriteProducts(): ResponseEntity<List<FavoriteStoreDTO>> {
         val authentication = SecurityContextHolder.getContext()
             .authentication as CustomAuthenticationToken
@@ -158,7 +158,7 @@ class StoreController {
         })
     }
 
-    @GetMapping("/{id}/related-stores")
+    @GetMapping("/{id}/related")
     fun getRelatedStores(@PathVariable id: Long): ResponseEntity<List<StoreDTO>> {
         val stores = this.storeService.getAllStores().filter { it.id != id }
         return ResponseEntity.ok(stores.map { store -> mapToStoreDTO(store)

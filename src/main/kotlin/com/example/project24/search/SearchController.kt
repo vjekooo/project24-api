@@ -1,7 +1,5 @@
 package com.example.project24.search
 
-import com.example.project24.product.Product
-import com.example.project24.store.Store
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,18 +15,10 @@ class SearchController() {
    lateinit var searchService: SearchService
 
    @GetMapping("")
-   fun searchAll(@RequestParam(name = "searchTerm") searchTerm: String): ResponseEntity<SearchResult> {
-       val result = searchService.searchAll(searchTerm)
-       return ResponseEntity.ok(result)
-   }
-
-   @GetMapping("/products")
-   fun searchProducts(@RequestParam searchTerm: String): List<Product> {
-       return searchService.searchProducts(searchTerm)
-   }
-
-   @GetMapping("/stores")
-   fun searchStores(@RequestParam searchTerm: String): List<Store> {
-       return searchService.searchStores(searchTerm)
+   fun searchByFilter(
+       @RequestParam(required = false) category: String?,
+       @RequestParam(required = false) name: String?
+   ): ResponseEntity<SearchResult> {
+       return ResponseEntity.ok(searchService.searchByFilter(category, name))
    }
 }

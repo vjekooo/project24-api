@@ -39,4 +39,10 @@ class ProductService {
     fun deleteProductById(id: Long) {
         return this.repository.deleteById(id)
     }
+
+    fun searchByFilter(category: String?, name:
+    String?): List<Product> {
+        return this.repository.findByFilter(category, name)
+    }
+
 }

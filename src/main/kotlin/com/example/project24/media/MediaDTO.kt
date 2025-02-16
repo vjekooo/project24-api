@@ -11,10 +11,3 @@ fun mapToMediaDTO(media: Media): MediaDTO {
         imageUrl = media.imageUrl
     )
 }
-
-fun mapMediaDTOtoMedia(mediaDTO: MediaDTO): Media {
-    return Media(
-        id = mediaDTO.id,
-        imageUrl = mediaDTO.imageUrl
-    )
-}

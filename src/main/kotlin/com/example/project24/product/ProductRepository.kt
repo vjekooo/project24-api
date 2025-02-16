@@ -2,7 +2,6 @@ package com.example.project24.product
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -13,6 +12,7 @@ interface ProductRepository : JpaRepository<Product, Long> {
     fun findAllByStoreId(storeId: Long): List<Product>
 
     @Query("SELECT p FROM Product p WHERE " +
-            "(LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    fun searchProducts(@Param("searchTerm") searchTerm: String): List<Product>
+            "(:category IS NULL OR :category MEMBER OF p.category) AND " +
+            "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))")
+    fun findByFilter(category: String?, name: String?): List<Product>
 }

@@ -16,5 +16,4 @@ class CategoryService {
     fun getCategoryById(id: Long): Category? {
         return repository.findById(id).orElse(null)
     }
-
 }

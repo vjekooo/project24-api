@@ -2,8 +2,8 @@ package com.example.project24.search
 
 import com.example.project24.store.Store
 import com.example.project24.product.Product
-import com.example.project24.product.ProductRepository
-import com.example.project24.store.StoreRepository
+import com.example.project24.product.ProductService
+import com.example.project24.store.StoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -13,25 +13,16 @@ data class SearchResult(
 )
 
 @Service
-class SearchService() {
+class SearchService {
+    @Autowired
+    lateinit var productService: ProductService
 
     @Autowired
-   lateinit var productRepository: ProductRepository
+    lateinit var storeService: StoreService
 
-   @Autowired
-   lateinit var storeRepository: StoreRepository
-
-   fun searchAll(searchTerm: String): SearchResult {
-       val products = productRepository.searchProducts(searchTerm)
-       val stores = storeRepository.searchStores(searchTerm)
-       return SearchResult(products, stores)
-   }
-
-   fun searchProducts(searchTerm: String): List<Product> {
-       return productRepository.searchProducts(searchTerm)
-   }
-
-   fun searchStores(searchTerm: String): List<Store> {
-       return storeRepository.searchStores(searchTerm)
-   }
+    fun searchByFilter(category: String?, name: String?): SearchResult {
+        val products = productService.searchByFilter(category, name)
+        val stores = storeService.searchByFilter(category, name)
+        return SearchResult(products = products, stores = stores)
+    }
 }
