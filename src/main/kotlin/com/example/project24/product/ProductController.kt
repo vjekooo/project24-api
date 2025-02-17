@@ -3,6 +3,8 @@ package com.example.project24.product
 import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
+import com.example.project24.media.Media
+import com.example.project24.storage.S3Service
 import com.example.project24.store.StoreService
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -30,19 +32,32 @@ class ProductController {
     @Autowired
     lateinit var categoryService: CategoryService
 
-    @PostMapping("")
-    fun createProduct(@Valid @RequestBody product: ProductRequest):
-            ResponseEntity<ApiMessageResponse> {
+    @Autowired
+    lateinit var s3Service: S3Service
 
-        val store = this.storeService.getStoreById(product.storeId)
+    @PostMapping("")
+    fun createProduct(@Valid @ModelAttribute productRequest: ProductRequest):
+    ResponseEntity<ApiMessageResponse> {
+
+        val store = this.storeService.getStoreById(productRequest.storeId)
 
         if (store == null) {
             return ResponseEntity.badRequest().body(
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapRequestToProduct(product, store, categoryService)
-            mappedProduct.store = store
+            val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
+
+            val savedMedia = productRequest.images.map { image ->
+                val fileName = s3Service.uploadFile(image)
+                Media(
+                    0,
+                    imageUrl = fileName,
+                    product = mappedProduct
+                )
+            }
+
+            mappedProduct.media = savedMedia.toMutableList()
 
             this.productService.createProduct(mappedProduct)
 
@@ -56,17 +71,27 @@ class ProductController {
     }
 
     @PutMapping("")
-    fun updateProduct(@Valid @RequestBody product: ProductRequest):
+    fun updateProduct(@Valid @ModelAttribute productRequest: ProductRequest):
             ResponseEntity<ApiMessageResponse> {
-        val store = this.storeService.getStoreById(product.storeId)
+        val store = this.storeService.getStoreById(productRequest.storeId)
 
         if (store == null) {
             return ResponseEntity.badRequest().body(
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapRequestToProduct(product, store, categoryService)
-            mappedProduct.store = store
+            val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
+
+            val savedMedia = productRequest.images.map { image ->
+                val fileName = s3Service.uploadFile(image)
+                Media(
+                    0,
+                    imageUrl = fileName,
+                    product = mappedProduct
+                )
+            }
+
+            mappedProduct.media = savedMedia.toMutableList()
 
             this.productService.updateProduct(mappedProduct)
 

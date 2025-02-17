@@ -46,7 +46,7 @@ class Product(
         joinColumns = [JoinColumn(name = "product_id")],
         inverseJoinColumns = [JoinColumn(name = "category_id")]
     )
-    var category: MutableSet<Category> = mutableSetOf(),
+    var category: List<Category> = mutableListOf(),
 
     @Column(nullable = false)
     val createdAt: Date = Date(),

@@ -3,6 +3,7 @@ package com.example.project24.category
 import com.example.project24.product.Product
 import com.example.project24.store.Store
 import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -27,9 +28,11 @@ class Category(
     var parent: Category? = null,
 
     @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
     var store: MutableSet<Store> = mutableSetOf(),
 
     @ManyToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
     var product: MutableSet<Product> = mutableSetOf()
 
 ) {

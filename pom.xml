@@ -124,6 +124,12 @@
             <artifactId>flyway-core</artifactId>
             <version>11.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-s3</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
