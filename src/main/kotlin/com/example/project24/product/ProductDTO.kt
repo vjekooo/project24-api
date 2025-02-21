@@ -2,7 +2,6 @@ package com.example.project24.product
 
 import com.example.project24.category.CategoryDTO
 import com.example.project24.category.mapToCategoryDTO
-import com.example.project24.media.Media
 import com.example.project24.media.MediaDTO
 import com.example.project24.media.mapToMediaDTO
 import java.math.BigDecimal
@@ -25,7 +24,8 @@ fun mapToProductDTO(product: Product): ProductDTO {
         id = product.id.toInt(),
         name = product.name,
         description = product.description,
-        media = product.media?.map { mapToMediaDTO(it) } ?: emptyList(),
+        media = product.media?.map { mapToMediaDTO(it) } ?:
+        emptyList(),
         storeId = product.store.id,
         price = product.price,
         discount = product.discount,

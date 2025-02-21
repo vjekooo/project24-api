@@ -25,11 +25,12 @@ fun mapToStoreDTO(store: Store): StoreDTO {
         id = store.id,
         name = store.name,
         description = store.description,
-        media = store.media?.map { mapToMediaDTO(it) } ?: emptyList(),
+        media = store.media?.map { mapToMediaDTO(it) } ?:
+        emptyList(),
         address = store.address,
         userId = store.user.id,
         products = store.product,
-        categories = store.category?.map { Category(it.id, it.name) } ?:
+        categories = store.category.map { Category(it.id, it.name) } ?:
         emptyList(),
         createdAt = store.createdAt,
         updatedAt = store.updatedAt

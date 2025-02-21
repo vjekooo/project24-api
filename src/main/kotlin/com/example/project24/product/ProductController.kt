@@ -4,6 +4,7 @@ import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
 import com.example.project24.media.Media
+import com.example.project24.media.MediaService
 import com.example.project24.storage.S3Service
 import com.example.project24.store.StoreService
 import com.example.project24.user.UserService
@@ -35,11 +36,14 @@ class ProductController {
     @Autowired
     lateinit var s3Service: S3Service
 
+    @Autowired
+    lateinit var mediaService: MediaService
+
     @PostMapping("")
     fun createProduct(@Valid @ModelAttribute productRequest: ProductRequest):
     ResponseEntity<ApiMessageResponse> {
 
-        val store = this.storeService.getStoreById(productRequest.storeId)
+        val store = this.storeService.getStoreById(productRequest.storeId.toLong())
 
         if (store == null) {
             return ResponseEntity.badRequest().body(
@@ -48,7 +52,7 @@ class ProductController {
         } else {
             val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
 
-            val savedMedia = productRequest.images.map { image ->
+            val savedMedia = productRequest.newImages?.map { image ->
                 val fileName = s3Service.uploadFile(image)
                 Media(
                     0,
@@ -57,7 +61,7 @@ class ProductController {
                 )
             }
 
-            mappedProduct.media = savedMedia.toMutableList()
+            mappedProduct.media = savedMedia?.toMutableList()
 
             this.productService.createProduct(mappedProduct)
 
@@ -73,35 +77,62 @@ class ProductController {
     @PutMapping("")
     fun updateProduct(@Valid @ModelAttribute productRequest: ProductRequest):
             ResponseEntity<ApiMessageResponse> {
-        val store = this.storeService.getStoreById(productRequest.storeId)
 
-        if (store == null) {
-            return ResponseEntity.badRequest().body(
+        val productId = productRequest.id?.toLong()
+            ?: return ResponseEntity.badRequest().body(
+                ApiMessageResponse("Product id is required")
+            )
+
+        val store = this.storeService.getStoreById(productRequest.storeId.toLong())
+            ?: return ResponseEntity.badRequest().body(
                 ApiMessageResponse("Store not found")
             )
-        } else {
-            val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
 
-            val savedMedia = productRequest.images.map { image ->
-                val fileName = s3Service.uploadFile(image)
-                Media(
-                    0,
-                    imageUrl = fileName,
-                    product = mappedProduct
-                )
+        val existingMedia = mediaService.repository.findAllByProductId(productId)
+        val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
+
+        val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"
+
+        val imagesToDelete = existingMedia
+            .filter {
+                "${mediaUrl}/${it.imageUrl}" !in (productRequest
+                    .existingImages ?: emptyList())
+        }
+
+        if (imagesToDelete.isNotEmpty()) {
+            imagesToDelete.forEach { file ->
+                run {
+                    s3Service.deleteFile(file.imageUrl)
+                    mediaService.repository.delete(file)
+                }
+            }
+        }
+
+        val newMedia = productRequest.newImages?.map { image ->
+            val fileName = s3Service.uploadFile(image)
+            Media(
+                0,
+                imageUrl = fileName,
+                product = mappedProduct
+            )
+        }.orEmpty()
+
+        val oldMedia = existingMedia
+            .filter {
+                "${mediaUrl}/${it.imageUrl}" in (productRequest
+                    .existingImages ?: emptyList())
             }
 
-            mappedProduct.media = savedMedia.toMutableList()
+        mappedProduct.media = (newMedia + oldMedia).toMutableList()
 
-            this.productService.updateProduct(mappedProduct)
+        this.productService.updateProduct(mappedProduct)
 
-            return ResponseEntity.ok(
-                ApiMessageResponse(
-                    "Product created " +
-                            "successfully"
-                )
+        return ResponseEntity.ok(
+            ApiMessageResponse(
+                "Product updated " +
+                        "successfully"
             )
-        }
+        )
     }
 
     @GetMapping("/store/{storeId}")

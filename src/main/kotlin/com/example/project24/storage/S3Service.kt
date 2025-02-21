@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.IOException
 import java.nio.file.Files
@@ -25,6 +26,7 @@ class S3Service(private val s3Client: S3Client) {
             val request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
+                .acl("public-read")
                 .build()
 
             s3Client.putObject(request, tempFile)
@@ -34,6 +36,17 @@ class S3Service(private val s3Client: S3Client) {
             return fileName
         } catch (e: IOException) {
             throw RuntimeException("Failed to upload file", e)
+        }
+    }
+
+    fun deleteFile(fileName: String): DeleteObjectResponse {
+        try {
+            return s3Client.deleteObject {
+                it.bucket(bucketName)
+                it.key(fileName)
+            }
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to delete file", e)
         }
     }
 }
