@@ -4,6 +4,7 @@ import com.example.project24.config.CookieProperties
 import com.example.project24.config.JwtProperties
 import com.example.project24.user.CustomUserDetails
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.Cookie
@@ -86,10 +87,15 @@ class TokenService(
         }
     }
 
-    fun isExpired(token: String): Boolean =
-        getAllClaims(token)
-            .expiration
-            .before(Date(System.currentTimeMillis()))
+    fun isExpired(token: String): Boolean {
+        return try {
+            getAllClaims(token).expiration.before(Date(System.currentTimeMillis()))
+        } catch (e: ExpiredJwtException) {
+            true
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to parse the token", e)
+        }
+    }
 
     private fun getAllClaims(token: String): Claims = Jwts.parserBuilder()
         .setSigningKey(secretKey).build()

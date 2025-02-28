@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 class CustomAuthenticationToken(
-    val userId: Long, // Additional userId field
+    val userId: Long,
     principal: Any,
     credentials: Any?,
     authorities: Collection<GrantedAuthority>
@@ -40,7 +40,21 @@ class JwtAuthFilter(
 
         val jwtToken = authHeader?.extractTokenValue()
 
-        val email = jwtToken?.let { tokenService.extractEmail(it) }
+        if (jwtToken == null) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val tokenIsExpired = tokenService.isExpired(jwtToken)
+
+        if (tokenIsExpired) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.writer.write("Token expired")
+            response.writer.flush()
+            return
+        }
+
+        val email = jwtToken.let { tokenService.extractEmail(it) }
 
         if (email != null && SecurityContextHolder.getContext().authentication == null) {
             val foundUser = userDetailsService.loadUserByUsername(email)
