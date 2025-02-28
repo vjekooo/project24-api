@@ -12,4 +12,8 @@ class MediaService {
     fun getAllFilesByProductId(productId: Long): List<Media> {
         return repository.findAllByProductId(productId)
     }
+
+    fun getAllFilesByStoreId(storeId: Long): List<Media> {
+        return repository.findAllByStoreId(storeId)
+    }
 }

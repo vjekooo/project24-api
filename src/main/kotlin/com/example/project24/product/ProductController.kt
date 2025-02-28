@@ -88,7 +88,7 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
 
-        val existingMedia = mediaService.repository.findAllByProductId(productId)
+        val existingMedia = mediaService.getAllFilesByProductId(productId)
         val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
 
         val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"

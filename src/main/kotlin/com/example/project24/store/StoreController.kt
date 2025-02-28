@@ -5,6 +5,8 @@ import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
 import com.example.project24.media.Media
+import com.example.project24.media.MediaService
+import com.example.project24.storage.S3Service
 import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -34,8 +36,14 @@ class StoreController {
     @Autowired
     lateinit var categoryService: CategoryService
 
+    @Autowired
+    lateinit var s3Service: S3Service
+
+    @Autowired
+    lateinit var mediaService: MediaService
+
     @PostMapping("")
-    fun createStore(@Valid @RequestBody store: StoreRequest):
+    fun createStore(@Valid @RequestBody storeRequest: StoreRequest):
             ResponseEntity<ApiMessageResponse> {
 
         val authentication = SecurityContextHolder.getContext()
@@ -50,33 +58,130 @@ class StoreController {
             )
         }
 
+        val categories = storeRequest.category.map { categoryId ->
+            categoryService.getCategoryById(categoryId.toLong())
+                ?: throw IllegalArgumentException("Category not found for ID: $categoryId")
+        }.toMutableList()
+
+        val mappedStore = mapRequestToStore(storeRequest)
+
         val address = user.get().address ?: return ResponseEntity(
             ApiMessageResponse("User address is not set"),
             HttpStatus.BAD_REQUEST
         )
 
-        val newStore = Store(
-            0,
-            store.name,
-            store.description,
-            store.image.map { Media(0, it) }.toMutableList(),
-            address,
-            user.get()
-        )
-       
-        val category = categoryService.getCategoryById(store.categoryId)
-            ?: return ResponseEntity(
-                ApiMessageResponse("Category not found"),
+        mappedStore.user = user.get()
+        mappedStore.address = address
+        mappedStore.category = categories
+
+        val savedMedia = storeRequest.newImages?.map { image ->
+            val fileName = s3Service.uploadFile(image)
+            Media(
+                0,
+                imageUrl = fileName,
+                store = mappedStore
+            )
+        }
+
+        mappedStore.media = savedMedia?.toMutableList()
+
+        try {
+            this.storeService.createStore(mappedStore)
+        } catch (e: Exception) {
+            mappedStore.media?.map { media -> {
+                s3Service.deleteFile(media.imageUrl)
+            }}
+            return ResponseEntity(
+                ApiMessageResponse("Store create failed"),
                 HttpStatus.BAD_REQUEST
             )
-
-        newStore.category = mutableSetOf(category)
-
-        this.storeService.createStore(newStore)
+        }
 
         return ResponseEntity(
             ApiMessageResponse("Store created successfully"),
             HttpStatus.CREATED
+        )
+    }
+
+    @PutMapping("")
+    fun updateStore(@Valid @ModelAttribute storeRequest: StoreRequest):
+            ResponseEntity<ApiMessageResponse> {
+
+        val storeId = storeRequest.id?.toLong() ?: return ResponseEntity(
+            ApiMessageResponse("Store id is required"),
+            HttpStatus.BAD_REQUEST
+        )
+
+        val existingStore = storeService.getStoreById(storeId) ?: return ResponseEntity(
+            ApiMessageResponse("Store not found"),
+            HttpStatus.BAD_REQUEST
+        )
+
+        val categories = storeRequest.category.map { categoryId ->
+            categoryService.getCategoryById(categoryId.toLong())
+                ?: throw IllegalArgumentException("Category not found for ID: $categoryId")
+        }.toMutableList()
+
+        val mappedStore = mapRequestToStore(storeRequest)
+
+        mappedStore.user = existingStore.user
+        mappedStore.address = existingStore.address
+        mappedStore.category = categories
+        mappedStore.product = existingStore.product
+
+        val existingMedia = mediaService.getAllFilesByStoreId(storeId)
+
+        val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"
+
+        val imagesToDelete = existingMedia
+            .filter {
+                "${mediaUrl}/${it.imageUrl}" !in (storeRequest
+                    .existingImages ?: emptyList())
+            }
+
+        if (imagesToDelete.isNotEmpty()) {
+            imagesToDelete.forEach { file ->
+                run {
+                    s3Service.deleteFile(file.imageUrl)
+                    mediaService.repository.delete(file)
+                }
+            }
+        }
+
+        val newMedia = storeRequest.newImages?.map { image ->
+            val fileName = s3Service.uploadFile(image)
+            Media(
+                0,
+                imageUrl = fileName,
+                store = mappedStore
+            )
+        }.orEmpty()
+
+        val oldMedia = existingMedia
+            .filter {
+                "${mediaUrl}/${it.imageUrl}" in (storeRequest
+                    .existingImages ?: emptyList())
+            }
+
+        mappedStore.media = (newMedia + oldMedia).toMutableList()
+
+        try {
+            this.storeService.updateStore(mappedStore)
+        } catch (e: Exception) {
+            mappedStore.media?.map { media -> {
+                s3Service.deleteFile(media.imageUrl)
+            }}
+            return ResponseEntity(
+                ApiMessageResponse("Store update failed"),
+                HttpStatus.BAD_REQUEST
+            )
+        }
+
+        return ResponseEntity.ok(
+            ApiMessageResponse(
+                "Store updated " +
+                        "successfully"
+            )
         )
 
     }
@@ -100,9 +205,11 @@ class StoreController {
     }
 
     @GetMapping("/all")
-    fun getAllStores(): ResponseEntity<List<Store>> {
+    fun getAllStores(): ResponseEntity<List<StoreDTO>> {
         val stores = this.storeService.getAllStores()
-        return ResponseEntity.ok(stores)
+
+        val storesDTO = stores.map { store -> mapToStoreDTO(store) }
+        return ResponseEntity.ok(storesDTO)
     }
 
     @GetMapping("/{id}")

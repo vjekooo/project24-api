@@ -10,4 +10,9 @@ interface MediaRepository : JpaRepository<Media, Long> {
         value = "SELECT m FROM Media m WHERE m.product.id = :productId"
     )
     fun findAllByProductId(productId: Long): List<Media>
+
+    @Query(
+        value = "SELECT m FROM Media m WHERE m.store.id = :storeId"
+    )
+    fun findAllByStoreId(storeId: Long): List<Media>
 }

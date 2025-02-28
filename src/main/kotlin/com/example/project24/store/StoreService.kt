@@ -1,6 +1,5 @@
 package com.example.project24.store
 
-import com.example.project24.product.Product
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -11,6 +10,10 @@ class StoreService {
     lateinit var repository: StoreRepository
 
     fun createStore(store: Store) {
+        this.repository.save(store)
+    }
+
+    fun updateStore(store: Store) {
         this.repository.save(store)
     }
 

@@ -26,7 +26,7 @@ class Store(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    val media: MutableList<Media>? = mutableListOf(),
+    var media: MutableList<Media>? = mutableListOf(),
 
     @OneToOne(
         cascade = [CascadeType.ALL],
@@ -45,7 +45,7 @@ class Store(
         cascade = [CascadeType.ALL],
         orphanRemoval = true
     )
-    val product: List<Product>? = null,
+    var product: List<Product>? = null,
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinTable(
@@ -53,7 +53,7 @@ class Store(
         joinColumns = [JoinColumn(name = "store_id")],
         inverseJoinColumns = [JoinColumn(name = "category_id")]
     )
-    var category: MutableSet<Category> = mutableSetOf(),
+    var category: MutableList<Category> = mutableListOf(),
 
     @Column(nullable = false)
     val createdAt: Date = Date(),
