@@ -11,8 +11,13 @@ interface ProductRepository : JpaRepository<Product, Long> {
     )
     fun findAllByStoreId(storeId: Long): List<Product>
 
-    @Query("SELECT p FROM Product p WHERE " +
-            "(:category IS NULL OR :category MEMBER OF p.category) AND " +
-            "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))")
-    fun findByFilter(category: String?, name: String?): List<Product>
+    @Query(
+        value = "SELECT p.*\n" +
+                "FROM product p\n" +
+                "         JOIN product_category pc ON p.id = pc.product_id\n" +
+                "         JOIN category c ON pc.category_id = c.id\n" +
+                "WHERE c.name LIKE :category",
+        nativeQuery = true
+    )
+    fun findByFilter(category: String?): List<Product>
 }

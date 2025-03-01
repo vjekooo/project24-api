@@ -50,7 +50,15 @@ class ProductController {
                 ApiMessageResponse("Store not found")
             )
         } else {
-            val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
+            val mappedProduct = mapRequestToProduct(productRequest)
+
+            val categories = productRequest.category.map { categoryId ->
+                categoryService.getCategoryById(categoryId.toLong())
+                    ?: throw IllegalArgumentException("Category not found for ID: $categoryId")
+            }.toMutableList()
+
+            mappedProduct.store = store
+            mappedProduct.category = categories
 
             val savedMedia = productRequest.newImages?.map { image ->
                 val fileName = s3Service.uploadFile(image)
@@ -89,7 +97,15 @@ class ProductController {
             )
 
         val existingMedia = mediaService.getAllFilesByProductId(productId)
-        val mappedProduct = mapRequestToProduct(productRequest, store, categoryService)
+        val mappedProduct = mapRequestToProduct(productRequest)
+
+        val categories = productRequest.category.map { categoryId ->
+            categoryService.getCategoryById(categoryId.toLong())
+                ?: throw IllegalArgumentException("Category not found for ID: $categoryId")
+        }.toMutableList()
+
+        mappedProduct.store = store
+        mappedProduct.category = categories
 
         val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"
 

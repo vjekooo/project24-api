@@ -32,9 +32,4 @@ class StoreService {
     fun getStoreByProductId(productId: Long): Store? {
         return this.repository.findByProductId(productId)
     }
-
-    fun searchByFilter(category: String?, name:
-    String?): List<Store> {
-        return this.repository.findByFilter(category, name)
-    }
 }

@@ -1,6 +1,5 @@
 package com.example.project24.product
 
-import com.example.project24.category.CategoryService
 import com.example.project24.store.Store
 import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
@@ -19,15 +18,7 @@ data class ProductRequest(
 
 fun mapRequestToProduct(
     productRequest: ProductRequest,
-    store: Store,
-    categoryService: CategoryService,
 ): Product {
-
-    val categories = productRequest.category.map { categoryId ->
-        categoryService.getCategoryById(categoryId.toLong())
-            ?: throw IllegalArgumentException("Category not found for ID: $categoryId")
-    }.toMutableList()
-
     val product =  Product(
         productRequest.id?.toLong() ?: 0,
         name = productRequest.name,
@@ -35,8 +26,8 @@ fun mapRequestToProduct(
         media = mutableListOf(),
         price = productRequest.price ?: BigDecimal.ZERO,
         isFeatured = productRequest.isFeatured ?: false,
-        category = categories,
-        store = store
+        category = mutableListOf(),
+        store = Store()
     )
     return product
 }

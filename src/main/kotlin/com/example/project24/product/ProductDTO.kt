@@ -16,7 +16,7 @@ data class ProductDTO(
     val discount: Double?,
     val finalPrice: BigDecimal?,
     val isFeatured: Boolean?,
-    val category: List<CategoryDTO>?
+    val categories: List<CategoryDTO>?
 )
 
 fun mapToProductDTO(product: Product): ProductDTO {
@@ -31,6 +31,6 @@ fun mapToProductDTO(product: Product): ProductDTO {
         discount = product.discount,
         finalPrice = product.calculateFinalPrice(),
         isFeatured = product.isFeatured,
-        category = product.category.map { mapToCategoryDTO(it) }
+        categories = product.category.map { mapToCategoryDTO(it) }
     )
 }

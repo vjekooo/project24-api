@@ -17,8 +17,11 @@ class SearchController() {
    @GetMapping("")
    fun searchByFilter(
        @RequestParam(required = false) category: String?,
-       @RequestParam(required = false) name: String?
+       @RequestParam(required = false) subCategory: String?,
    ): ResponseEntity<SearchResult> {
-       return ResponseEntity.ok(searchService.searchByFilter(category, name))
+
+       val result = searchService.searchByFilter(category, subCategory)
+
+       return ResponseEntity.ok(result)
    }
 }
