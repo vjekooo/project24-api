@@ -4,7 +4,8 @@ import com.example.project24.address.Address
 import com.example.project24.category.Category
 import com.example.project24.media.MediaDTO
 import com.example.project24.media.mapToMediaDTO
-import com.example.project24.product.Product
+import com.example.project24.product.ProductDTO
+import com.example.project24.product.mapToProductDTO
 
 data class StoreDTO(
     val id: Long,
@@ -13,7 +14,7 @@ data class StoreDTO(
     val media: List<MediaDTO>?,
     val address: Address?,
     val userId: Long,
-    val products: List<Product>?,
+    val products: List<ProductDTO>?,
     val categories: List<Category>?,
 )
 
@@ -26,7 +27,7 @@ fun mapToStoreDTO(store: Store): StoreDTO {
         emptyList(),
         address = store.address,
         userId = store.user.id,
-        products = store.product,
+        products = store.product?.map { mapToProductDTO(it) },
         categories = store.category.map { Category(it.id, it.name) }
     )
 }
