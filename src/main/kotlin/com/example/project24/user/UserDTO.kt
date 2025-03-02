@@ -1,10 +1,7 @@
 package com.example.project24.user
 
 import com.example.project24.address.Address
-import com.example.project24.product.FavoriteProduct
-import com.example.project24.product.FavoriteProductDTO
-import com.example.project24.product.mapToFavoriteProductDTO
-import com.example.project24.product.mapToProductDTO
+import com.example.project24.product.*
 import com.example.project24.store.*
 
 data class UserDTO(
@@ -16,8 +13,8 @@ data class UserDTO(
     val enabled: Boolean?,
     val address: Address?,
     val stores: List<StoreDTO>?,
-    val favoriteProducts: List<FavoriteProductDTO>?,
-    val favoriteStores: List<FavoriteStoreDTO>?,
+    var favoriteProducts: List<ProductDTO>?,
+    var favoriteStores: List<StoreDTO>?,
     val createdAt: String,
     val updatedAt: String
 )
@@ -32,8 +29,8 @@ fun mapToUserDTO(user: User): UserDTO {
         enabled = user.enabled,
         address = user.address,
         stores = user.store?.map { mapToStoreDTO(it) },
-        favoriteProducts = user.favoriteProduct?.map { mapToFavoriteProductDTO(it) },
-        favoriteStores = user.favoriteStore?.map{ mapToFavoriteStoreDTO(it) },
+        favoriteProducts = mutableListOf<ProductDTO>(),
+        favoriteStores = mutableListOf<StoreDTO>(),
         createdAt = user.createdAt.toString(),
         updatedAt = user.updatedAt?.toString() ?: ""
     )

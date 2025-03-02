@@ -26,5 +26,4 @@ class FavoriteStoreService {
     fun getAllUserFavorites(userId: Long): List<FavoriteStore> {
         return this.favoriteStoreRepository.findAllByUserId(userId)
     }
-
 }
