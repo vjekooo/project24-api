@@ -12,12 +12,28 @@ interface ProductRepository : JpaRepository<Product, Long> {
     fun findAllByStoreId(storeId: Long): List<Product>
 
     @Query(
-        value = "SELECT p.*" +
-                "FROM product p" +
-                "         JOIN product_category pc ON p.id = pc.product_id" +
-                "         JOIN category c ON pc.category_id = c.id WHERE c" +
-                ".name IN (:categories)",
+        value = """
+            SELECT p.*
+            FROM product p
+            JOIN product_category pc ON p.id = pc.product_id
+            JOIN category c ON pc.category_id = c.id
+            WHERE c.name IN (:categoryIds)
+        """,
         nativeQuery = true
     )
-    fun findByFilter(categories: List<String>): List<Product>
+    fun findByFilter(categoryIds: List<String>): List<Product>
+
+    @Query(
+        value = """
+            SELECT p.* 
+            FROM product p
+            JOIN product_category pc ON p.id = pc.product_id
+            JOIN category c ON pc.category_id = c.id
+            WHERE c.id IN (:categoryIds)
+            AND p.id != :productId
+        """,
+        nativeQuery = true
+    )
+    fun findRelatedProductsByCategories(productId: Long, categoryIds: List<Long>)
+    : List<Product>
 }

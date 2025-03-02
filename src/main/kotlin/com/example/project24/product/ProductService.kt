@@ -32,8 +32,9 @@ class ProductService {
         return this.repository.findById(id).orElse(null)
     }
 
-    fun getRelatedProducts(id: Long): List<Product> {
-        return this.repository.findAllByStoreId(id)
+    fun getRelatedProducts(productId: Long, categoryIds: List<Long>):
+            List<Product> {
+        return this.repository.findRelatedProductsByCategories(productId, categoryIds)
     }
 
     fun deleteProductById(id: Long) {
