@@ -32,4 +32,18 @@ class StoreService {
     fun getStoreByProductId(productId: Long): Store? {
         return this.repository.findByProductId(productId)
     }
+
+    fun searchByFilter(category: String): List<StoreDTO> {
+        val stores = this.repository.findByFilter(category)
+        return stores.map({ store ->
+            mapToStoreDTO(store)
+        })
+    }
+
+    fun getStoresByProductCategory(category: String): List<StoreDTO> {
+        val stores = this.repository.findAllStoresBySubcategory(category)
+        return stores.map({ store ->
+            mapToStoreDTO(store)
+        })
+    }
 }

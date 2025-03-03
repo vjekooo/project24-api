@@ -17,11 +17,11 @@ interface ProductRepository : JpaRepository<Product, Long> {
             FROM product p
             JOIN product_category pc ON p.id = pc.product_id
             JOIN category c ON pc.category_id = c.id
-            WHERE c.name IN (:categoryIds)
+            WHERE c.name = :category
         """,
         nativeQuery = true
     )
-    fun findByFilter(categoryIds: List<String>): List<Product>
+    fun findByFilter(category: String): List<Product>
 
     @Query(
         value = """
@@ -36,4 +36,26 @@ interface ProductRepository : JpaRepository<Product, Long> {
     )
     fun findRelatedProductsByCategories(productId: Long, categoryIds: List<Long>)
     : List<Product>
+
+    @Query(
+        value = """
+            WITH RECURSIVE subcategories AS (
+                SELECT c1.id
+                FROM category c1
+                WHERE c1.name = :storeCategory
+                UNION ALL
+                SELECT c2.id
+                FROM category c2
+                INNER JOIN subcategories sc ON c2.parent_id = sc.id
+            )
+            SELECT p.*
+            FROM product p
+            JOIN store_category sc ON p.store_id = sc.store_id
+            JOIN category c ON sc.category_id = c.id
+            WHERE c.id IN (SELECT id FROM subcategories)
+        """,
+        nativeQuery = true
+    )
+
+    fun findAllByStoreCategory(storeCategory: String): List<Product>
 }

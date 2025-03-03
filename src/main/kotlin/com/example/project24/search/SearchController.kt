@@ -20,9 +20,7 @@ class SearchController() {
        @RequestParam(required = false) subCategory: String?,
    ): ResponseEntity<SearchResult> {
 
-       val categories = listOfNotNull(category, subCategory)
-
-       val result = searchService.searchByFilter(categories)
+       val result = searchService.searchByFilter(category, subCategory)
 
        return ResponseEntity.ok(result)
    }

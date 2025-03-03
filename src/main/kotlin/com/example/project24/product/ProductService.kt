@@ -41,8 +41,18 @@ class ProductService {
         return this.repository.deleteById(id)
     }
 
-    fun searchByFilter(categories: List<String>): List<Product> {
-        return this.repository.findByFilter(categories)
+    fun searchByFilter(category: String): List<ProductDTO> {
+        val products =  this.repository.findByFilter(category)
+        return products.map { product ->
+            mapToProductDTO(product)
+        }
+    }
+
+    fun getProductsByStoreCategory(category: String): List<ProductDTO> {
+        val products = this.repository.findAllByStoreCategory(category)
+        return products.map { product ->
+            mapToProductDTO(product)
+        }
     }
 
 }

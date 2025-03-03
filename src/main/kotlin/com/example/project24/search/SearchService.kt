@@ -2,8 +2,8 @@ package com.example.project24.search
 
 import com.example.project24.product.ProductDTO
 import com.example.project24.product.ProductService
-import com.example.project24.product.mapToProductDTO
 import com.example.project24.store.StoreDTO
+import com.example.project24.store.StoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -17,14 +17,23 @@ class SearchService {
     @Autowired
     lateinit var productService: ProductService
 
-    fun searchByFilter(categories: List<String>): SearchResult {
+    @Autowired
+    lateinit var storeService: StoreService
 
-        val products = productService.searchByFilter(categories)
+    fun searchByFilter(category: String?, subCategory: String?): SearchResult {
 
-        val mappedProducts = products.map { product ->
-            mapToProductDTO(product)
-        }
+        val products = subCategory?.let { productService.searchByFilter(it) }
+            ?: mutableListOf()
+        val stores = category?.let { storeService.searchByFilter(category) }
+            ?: mutableListOf()
 
-        return SearchResult(products = mappedProducts, stores = mutableListOf())
+        val storeProducts = category?.let { productService.getProductsByStoreCategory(category) }
+            ?: mutableListOf()
+        val productStores = subCategory?.let { storeService
+            .getStoresByProductCategory(subCategory) }
+            ?: mutableListOf()
+
+        return SearchResult(products = products + storeProducts, stores =
+            stores + productStores)
     }
 }
