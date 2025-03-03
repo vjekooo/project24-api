@@ -1,15 +1,15 @@
 package com.example.project24.search
 
-import com.example.project24.store.Store
 import com.example.project24.product.ProductDTO
 import com.example.project24.product.ProductService
 import com.example.project24.product.mapToProductDTO
+import com.example.project24.store.StoreDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 data class SearchResult(
     val products: List<ProductDTO>,
-    val stores: List<Store>
+    val stores: List<StoreDTO>
 )
 
 @Service
