@@ -55,4 +55,11 @@ class ProductService {
         }
     }
 
+    fun getLatestProducts(): List<ProductDTO> {
+        val products = this.repository.findAll().sortedByDescending { it.createdAt }
+        return products.map { product ->
+            mapToProductDTO(product)
+        }
+    }
+
 }

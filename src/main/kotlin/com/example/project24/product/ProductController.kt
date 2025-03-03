@@ -236,4 +236,10 @@ class ProductController {
         this.productService.deleteProductById(productId)
         return ResponseEntity.ok(ApiMessageResponse("Product deleted successfully"))
     }
+
+    @GetMapping("/latest")
+    fun getLatestProducts(): ResponseEntity<List<ProductDTO>> {
+        val products = this.productService.getLatestProducts()
+        return ResponseEntity.ok(products)
+    }
 }
