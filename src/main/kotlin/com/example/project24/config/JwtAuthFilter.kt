@@ -41,6 +41,7 @@ class JwtAuthFilter(
         val jwtToken = authHeader?.extractTokenValue()
 
         if (jwtToken == null) {
+            // Todo: handle response
             filterChain.doFilter(request, response)
             return
         }
