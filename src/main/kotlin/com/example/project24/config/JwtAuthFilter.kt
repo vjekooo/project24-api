@@ -49,7 +49,8 @@ class JwtAuthFilter(
 
         if (tokenIsExpired) {
             response.status = HttpServletResponse.SC_UNAUTHORIZED
-            response.writer.write("Token expired")
+            response.contentType = "application/json"
+            response.writer.write("""{"message": "Token expired"}""")
             response.writer.flush()
             return
         }

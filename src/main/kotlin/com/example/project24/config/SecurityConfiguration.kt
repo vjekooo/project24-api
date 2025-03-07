@@ -44,6 +44,7 @@ class SecurityConfiguration(
                         "/api/auth/confirm-registration",
                         "/api/store/all",
                         "/api/search/**",
+                        "/api/product/latest"
                     )
                     .permitAll()
                     .anyRequest().authenticated();
