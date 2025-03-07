@@ -43,7 +43,7 @@ class StoreController {
     lateinit var mediaService: MediaService
 
     @PostMapping("")
-    fun createStore(@Valid @RequestBody storeRequest: StoreRequest):
+    fun createStore(@Valid @ModelAttribute storeRequest: StoreRequest):
             ResponseEntity<ApiMessageResponse> {
 
         val authentication = SecurityContextHolder.getContext()
@@ -65,13 +65,7 @@ class StoreController {
 
         val mappedStore = mapRequestToStore(storeRequest)
 
-        val address = user.get().address ?: return ResponseEntity(
-            ApiMessageResponse("User address is not set"),
-            HttpStatus.BAD_REQUEST
-        )
-
         mappedStore.user = user.get()
-        mappedStore.address = address
         mappedStore.category = categories
 
         val savedMedia = storeRequest.newImages?.map { image ->

@@ -21,3 +21,15 @@ fun mapToAddressDTO(address: Address): AddressDTO {
         storeId = address.store?.id,
     )
 }
+
+fun mapToAddress(addressDTO: AddressDTO): Address {
+    return Address(
+        id = addressDTO.id,
+        street = addressDTO.street,
+        houseNumber = addressDTO.houseNumber,
+        city = addressDTO.city,
+        postalCode = addressDTO.postalCode,
+        user = null,
+        store = null,
+    )
+}

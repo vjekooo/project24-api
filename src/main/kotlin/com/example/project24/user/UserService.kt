@@ -1,5 +1,6 @@
 package com.example.project24.user
 
+import com.example.project24.store.Store
 import com.example.project24.verificationToken.VerificationToken
 import com.example.project24.verificationToken.VerificationTokenService
 import org.springframework.beans.factory.annotation.Autowired

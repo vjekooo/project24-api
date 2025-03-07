@@ -2,6 +2,7 @@ package com.example.project24.address
 
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
+import com.example.project24.store.StoreService
 import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
@@ -26,8 +27,12 @@ class AddressController {
     @Autowired
     lateinit var userService: UserService
 
-    @PostMapping("")
-    fun create(@Valid @RequestBody address: Address): ResponseEntity<ApiMessageResponse> {
+    @Autowired
+    lateinit var storeService: StoreService
+
+    @PostMapping("/store")
+    fun create(@Valid @RequestBody address: AddressDTO):
+            ResponseEntity<ApiMessageResponse> {
         val authentication = SecurityContextHolder.getContext()
             .authentication as CustomAuthenticationToken
         val userId = authentication.userId.toInt()
@@ -36,8 +41,14 @@ class AddressController {
         if (user.isEmpty) {
             throw IllegalStateException("User not found")
         }
-        address.user = user.get()
-        this.addressService.createAddress(address)
+
+        val mappedAddress = mapToAddress(address)
+
+        val store = storeService.getUserStores(userId.toLong())?.firstOrNull()
+
+        mappedAddress.store = store
+
+        this.addressService.createAddress(mappedAddress)
 
         return ResponseEntity(
             ApiMessageResponse("Address created successfully"),

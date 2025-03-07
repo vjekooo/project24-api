@@ -1,27 +1,29 @@
 package com.example.project24.store
 
-import com.example.project24.product.Product
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
 interface StoreRepository : JpaRepository<Store, Long> {
 
     @Query(
-        value = "SELECT * FROM store WHERE user = :id",
+        value = """
+            SELECT * FROM store 
+            WHERE user_id = :userId 
+            ORDER BY created_at DESC
+        """,
         nativeQuery = true
     )
-    fun findAllByUserId(@Param("id") id: Long): List<Store>?
+    fun findAllByUserId(userId: Long): List<Store>?
 
     @Query(
         value = """
-        SELECT s.* 
-        FROM store s
-        JOIN product p ON p.store_id = s.id
-        WHERE p.id = :productId
-    """,
+            SELECT s.* 
+            FROM store s
+            JOIN product p ON p.store_id = s.id
+            WHERE p.id = :productId
+        """,
         nativeQuery = true
     )
     fun findByProductId(productId: Long): Store?
