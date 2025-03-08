@@ -67,4 +67,11 @@ class ProductService {
     fun incrementViewCount(id: Long) {
         this.repository.incrementViewCount(id)
     }
+
+    fun getPopularProducts(): List<ProductDTO> {
+        val products = this.repository.findPopularProducts()
+        return products.map { product ->
+            mapToProductDTO(product)
+        }
+    }
 }

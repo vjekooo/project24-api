@@ -262,4 +262,10 @@ class ProductController {
         val products = this.productService.getLatestProducts()
         return ResponseEntity.ok(products)
     }
+
+    @GetMapping("/popular")
+    fun getPopularProducts(): ResponseEntity<List<ProductDTO>> {
+        val products = this.productService.getPopularProducts()
+        return ResponseEntity.ok(products)
+    }
 }

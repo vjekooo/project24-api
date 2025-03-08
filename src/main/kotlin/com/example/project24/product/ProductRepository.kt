@@ -63,4 +63,11 @@ interface ProductRepository : JpaRepository<Product, Long> {
     @Query("UPDATE Product p SET p.viewCount = p.viewCount + 1 WHERE p.id = " +
             ":productId")
     fun incrementViewCount(productId: Long)
+
+    @Query(
+        value = """
+            SELECT p from Product p ORDER BY p.viewCount DESC LIMIT 3
+        """
+    )
+    fun findPopularProducts(): List<Product>
 }
