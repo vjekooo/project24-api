@@ -233,7 +233,18 @@ class ProductController {
     @DeleteMapping("/{productId}")
     fun deleteProduct(@PathVariable productId: Long):
             ResponseEntity<ApiMessageResponse> {
-        this.productService.deleteProductById(productId)
+        try {
+            val product = this.productService.getProductById(productId)
+            this.productService.deleteProductById(productId)
+            product?.media?.forEach { media ->
+                println("Deleting file: ${media.imageUrl}")
+                s3Service.deleteFile(media.imageUrl)
+            }
+        } catch (e: Exception) {
+            return ResponseEntity.status(400).body(
+                ApiMessageResponse("Product delete failed")
+            )
+        }
         return ResponseEntity.ok(ApiMessageResponse("Product deleted successfully"))
     }
 

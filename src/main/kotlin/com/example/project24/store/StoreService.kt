@@ -42,4 +42,8 @@ class StoreService {
             mapToStoreDTO(store)
         })
     }
+
+    fun deleteStoreById(id: Long) {
+        this.repository.deleteById(id)
+    }
 }

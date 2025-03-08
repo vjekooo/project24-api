@@ -1,6 +1,5 @@
 package com.example.project24.store
 
-import com.example.project24.auth.TokenService
 import com.example.project24.category.CategoryService
 import com.example.project24.config.ApiMessageResponse
 import com.example.project24.config.CustomAuthenticationToken
@@ -23,9 +22,6 @@ class StoreController {
 
     @Autowired
     lateinit var storeService: StoreService
-
-    @Autowired
-    lateinit var tokenService: TokenService
 
     @Autowired
     lateinit var userService: UserService
@@ -181,16 +177,14 @@ class StoreController {
     }
 
     @GetMapping("/user")
-    fun getUserStores(@RequestHeader("Authorization") authHeader: String):
+    fun getUserStores():
             ResponseEntity<List<Store>> {
 
-        val token = authHeader.removePrefix("Bearer ").trim()
-        val userId = this.tokenService.extractUserId(token)
-        val id = userId ?: return ResponseEntity(
-            HttpStatus
-                .UNAUTHORIZED
-        )
-        val allStores = this.storeService.getUserStores(id)
+        val authentication = SecurityContextHolder.getContext()
+            .authentication as CustomAuthenticationToken
+        val userId = authentication.userId
+
+        val allStores = this.storeService.getUserStores(userId)
 
         return ResponseEntity(
             allStores ?: emptyList(),
@@ -264,5 +258,22 @@ class StoreController {
         val stores = this.storeService.getAllStores().filter { it.id != id }
         return ResponseEntity.ok(stores.map { store -> mapToStoreDTO(store)
         })
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteStore(@PathVariable id: Long): ResponseEntity<ApiMessageResponse> {
+        try {
+            val store = this.storeService.getStoreById(id) ?: return ResponseEntity.notFound().build()
+            this.storeService.deleteStoreById(store.id)
+            store.media?.forEach { media ->
+                println("Deleting file: ${media.imageUrl}")
+                s3Service.deleteFile(media.imageUrl)
+            }
+        } catch (e: Exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ApiMessageResponse("Store delete failed")
+            )
+        }
+        return ResponseEntity.ok(ApiMessageResponse("Store deleted successfully"))
     }
 }

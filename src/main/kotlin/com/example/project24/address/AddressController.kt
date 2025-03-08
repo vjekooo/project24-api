@@ -48,7 +48,11 @@ class AddressController {
 
         mappedAddress.store = store
 
-        this.addressService.createAddress(mappedAddress)
+        val newsAddress = this.addressService.createAddress(mappedAddress)
+
+        store?.address = newsAddress
+
+        this.storeService.updateStore(store!!)
 
         return ResponseEntity(
             ApiMessageResponse("Address created successfully"),
