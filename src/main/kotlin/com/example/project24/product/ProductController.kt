@@ -185,12 +185,14 @@ class ProductController {
         val currentProduct = this.productService.getProductById(productId)
             ?: return ResponseEntity.notFound().build()
 
-        val categoryIds = currentProduct.category.map { category -> category.id }
-            .toMutableList()
+        val singleCategory = currentProduct.category.firstOrNull() ?: return ResponseEntity.notFound().build()
+
+        val subCategories = this.categoryService
+            .getALlSubCategoriesBySubCategory(singleCategory.id).orEmpty()
 
         val relatedProducts =
             currentProduct.id.let {
-                this.productService.getRelatedProducts(it, categoryIds)
+                this.productService.getRelatedProducts(it, subCategories)
             }
 
         val mappedProducts = relatedProducts.map { product -> mapToProductDTO(product) }
