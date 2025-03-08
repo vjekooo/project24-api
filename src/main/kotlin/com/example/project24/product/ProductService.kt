@@ -62,4 +62,7 @@ class ProductService {
         }
     }
 
+    fun incrementViewCount(id: Long) {
+        this.repository.incrementViewCount(id)
+    }
 }

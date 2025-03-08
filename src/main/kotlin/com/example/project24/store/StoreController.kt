@@ -209,13 +209,10 @@ class StoreController {
 
     @GetMapping("/{id}")
     fun getStoreById(@PathVariable id: Long): ResponseEntity<StoreDTO> {
-        val store = this.storeService.getStoreById(id)
-        return if (store != null) {
-            val storeDTO = mapToStoreDTO(store)
-            ResponseEntity.ok(storeDTO)
-        } else {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
+        val store = this.storeService.getStoreById(id) ?: return ResponseEntity.notFound().build()
+        val storeDTO = mapToStoreDTO(store)
+        this.storeService.incrementViewCount(id)
+        return ResponseEntity.ok(storeDTO)
     }
 
     @PostMapping("/toggle-favorite")

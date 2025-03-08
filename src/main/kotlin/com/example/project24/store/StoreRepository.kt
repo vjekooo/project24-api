@@ -1,6 +1,7 @@
 package com.example.project24.store
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
@@ -62,7 +63,9 @@ interface StoreRepository : JpaRepository<Store, Long> {
     """,
         nativeQuery = true
     )
-
     fun findAllStoresBySubcategory(subCategory: String): List<Store>
 
+    @Modifying
+    @Query("UPDATE Store s SET s.viewCount = s.viewCount + 1 WHERE s.id = :storeId")
+    fun incrementViewCount(storeId: Long)
 }

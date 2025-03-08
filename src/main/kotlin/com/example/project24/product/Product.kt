@@ -48,6 +48,8 @@ class Product(
     )
     var category: List<Category> = mutableListOf(),
 
+    var viewCount: Long = 0,
+
     @Column(nullable = false)
     val createdAt: Date = Date(),
 

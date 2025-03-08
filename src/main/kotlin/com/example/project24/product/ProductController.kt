@@ -172,9 +172,9 @@ class ProductController {
     @GetMapping("/{productId}")
     fun getProductBy(@PathVariable productId: Long):
             ResponseEntity<ProductDTO> {
-        val product = this.productService.getProductById(productId)
-        val mappedProduct = product?.let { mapToProductDTO(it) }
-
+        val product = this.productService.getProductById(productId) ?: return ResponseEntity.notFound().build()
+        val mappedProduct = mapToProductDTO(product)
+        this.productService.incrementViewCount(productId)
         return ResponseEntity.ok(mappedProduct)
     }
 

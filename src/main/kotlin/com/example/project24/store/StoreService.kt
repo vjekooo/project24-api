@@ -46,4 +46,8 @@ class StoreService {
     fun deleteStoreById(id: Long) {
         this.repository.deleteById(id)
     }
+
+    fun incrementViewCount(id: Long) {
+        this.repository.incrementViewCount(id)
+    }
 }
