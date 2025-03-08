@@ -279,4 +279,10 @@ class StoreController {
         }
         return ResponseEntity.ok(ApiMessageResponse("Store deleted successfully"))
     }
+
+    @GetMapping("/latest")
+    fun getLatestStores(): ResponseEntity<List<StoreDTO>> {
+        val stores = this.storeService.getLatestStores()
+        return ResponseEntity.ok(stores)
+    }
 }

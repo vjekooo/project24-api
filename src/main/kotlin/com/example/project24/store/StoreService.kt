@@ -30,6 +30,13 @@ class StoreService {
         return this.repository.findById(id).orElse(null)
     }
 
+    fun getLatestStores(): List<StoreDTO> {
+        val stores = this.repository.findLatest()
+        return stores.map({ store ->
+            mapToStoreDTO(store)
+        })
+    }
+
     fun searchByFilter(category: String): List<StoreDTO> {
         val stores = this.repository.findByFilter(category)
         return stores.map({ store ->

@@ -19,6 +19,11 @@ interface StoreRepository : JpaRepository<Store, Long> {
     fun findAllByUserId(userId: Long): List<Store>?
 
     @Query(
+        value = "select s from Store s ORDER BY s.createdAt DESC LIMIT 6"
+    )
+    fun findLatest(): List<Store>
+
+    @Query(
         value = """
             SELECT s.* 
             FROM store s
