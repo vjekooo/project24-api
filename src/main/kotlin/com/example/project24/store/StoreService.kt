@@ -1,5 +1,6 @@
 package com.example.project24.store
 
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -47,6 +48,7 @@ class StoreService {
         this.repository.deleteById(id)
     }
 
+    @Transactional
     fun incrementViewCount(id: Long) {
         this.repository.incrementViewCount(id)
     }
