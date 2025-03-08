@@ -10,6 +10,7 @@ import com.example.project24.user.User
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
@@ -37,6 +38,12 @@ class StoreController {
 
     @Autowired
     lateinit var mediaService: MediaService
+
+    @Value("\${spring.cloud.aws.region.static}")
+    lateinit var awsRegion: String
+
+    @Value("\${spring.cloud.aws.s3.bucket}")
+    lateinit var s3Bucket: String
 
     @PostMapping("")
     fun createStore(@Valid @ModelAttribute storeRequest: StoreRequest):
@@ -121,7 +128,7 @@ class StoreController {
 
         val existingMedia = mediaService.getAllFilesByStoreId(storeId)
 
-        val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"
+        val mediaUrl = "https://$s3Bucket.s3.$awsRegion.amazonaws.com"
 
         val imagesToDelete = existingMedia
             .filter {
@@ -266,7 +273,6 @@ class StoreController {
             val store = this.storeService.getStoreById(id) ?: return ResponseEntity.notFound().build()
             this.storeService.deleteStoreById(store.id)
             store.media?.forEach { media ->
-                println("Deleting file: ${media.imageUrl}")
                 s3Service.deleteFile(media.imageUrl)
             }
         } catch (e: Exception) {

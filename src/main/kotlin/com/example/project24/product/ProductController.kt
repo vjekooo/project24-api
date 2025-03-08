@@ -10,6 +10,7 @@ import com.example.project24.store.StoreService
 import com.example.project24.user.UserService
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
@@ -38,6 +39,12 @@ class ProductController {
 
     @Autowired
     lateinit var mediaService: MediaService
+
+    @Value("\${spring.cloud.aws.region.static}")
+    lateinit var awsRegion: String
+
+    @Value("\${spring.cloud.aws.s3.bucket}")
+    lateinit var s3Bucket: String
 
     @PostMapping("")
     fun createProduct(@Valid @ModelAttribute productRequest: ProductRequest):
@@ -107,7 +114,7 @@ class ProductController {
         mappedProduct.store = store
         mappedProduct.category = categories
 
-        val mediaUrl = "https://project24-files.s3.eu-west-1.amazonaws.com"
+        val mediaUrl = "https://$s3Bucket.s3.$awsRegion.amazonaws.com"
 
         val imagesToDelete = existingMedia
             .filter {
