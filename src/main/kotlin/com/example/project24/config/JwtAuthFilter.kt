@@ -31,22 +31,16 @@ class JwtAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader: String? = request.getHeader("Authorization")
+        val jwtTokenFromCookie =
+            request.cookies?.find { it.name == "jwt" }?.value
 
-        if (authHeader.doesNotContainBearerToken()) {
+
+        if (jwtTokenFromCookie == null) {
             filterChain.doFilter(request, response)
             return
         }
 
-        val jwtToken = authHeader?.extractTokenValue()
-
-        if (jwtToken == null) {
-            // Todo: handle response
-            filterChain.doFilter(request, response)
-            return
-        }
-
-        val tokenIsExpired = tokenService.isExpired(jwtToken)
+        val tokenIsExpired = tokenService.isExpired(jwtTokenFromCookie)
 
         if (tokenIsExpired) {
             response.status = HttpServletResponse.SC_UNAUTHORIZED
@@ -56,12 +50,12 @@ class JwtAuthFilter(
             return
         }
 
-        val email = jwtToken.let { tokenService.extractEmail(it) }
+        val email = jwtTokenFromCookie.let { tokenService.extractEmail(it) }
 
         if (email != null && SecurityContextHolder.getContext().authentication == null) {
             val foundUser = userDetailsService.loadUserByUsername(email)
 
-            if (tokenService.isValid(jwtToken, foundUser)) {
+            if (tokenService.isValid(jwtTokenFromCookie, foundUser)) {
                 updateContext(foundUser, request)
             }
 

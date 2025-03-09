@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.http.HttpHeaders
 
 @RestController
 @RequestMapping("/api/auth")
@@ -87,10 +88,10 @@ class AuthController(
 
         this.verificationTokenService.deleteVerificationToken(user.id)
 
-        val jwtToken =
-            authService.authentication(AuthRequest(user.email, user.password))
-        val cookie = this.tokenService.createCookie(jwtToken.accessToken)
-        response.addCookie(cookie)
+//        val jwtToken =
+//            authService.authentication(AuthRequest(user.email, user.password))
+//        val cookie = this.tokenService.createCookie(jwtToken.accessToken)
+//        response.addCookie(cookie)
 
         return ResponseEntity(
             user,
@@ -101,14 +102,19 @@ class AuthController(
     @PostMapping("/login")
     fun login(
         @RequestBody credentials: AuthRequest,
-        session: HttpSession,
         response: HttpServletResponse,
-    ): AuthResponse {
+    ): ResponseEntity<ApiMessageResponse> {
         val token = authService.authentication(credentials)
         val cookie = tokenService.createCookie(token.accessToken)
-        response.addCookie(cookie).let { token }
 
-        return token
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie
+            .toString()).body(ApiMessageResponse("Login successful"))
+    }
+
+    @GetMapping("/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
+        val cookie = tokenService.createCookie("", invalidate = true)
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build()
     }
 
     @PostMapping("/refresh")
@@ -126,12 +132,6 @@ class AuthController(
         TokenResponse(
             token = this
         )
-
-    @GetMapping("/logout")
-    fun logout(session: HttpSession): String {
-        session.invalidate()
-        return "Logged out"
-    }
 }
 
 private fun getBaseUrl(

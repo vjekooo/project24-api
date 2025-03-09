@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.Cookie
+import org.springframework.http.ResponseCookie
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.*
@@ -41,29 +42,17 @@ class TokenService(
 
     fun createCookie(
         token: String,
-    ): Cookie {
-        val cookie = Cookie(cookieName, token)
+        invalidate: Boolean = false,
+    ): ResponseCookie {
 
-        try {
-            val userId = extractUserId(token)
-
-            cookie.apply {
-                isHttpOnly = httpOnly
-                secure = false
-                path = path
-                maxAge = accessTokenExpiration.toInt()
-                setAttribute(
-                    "userId",
-                    userId.toString()
-                )
-                setAttribute(
-                    "sameSite",
-                    "none"
-                )
-            }
-        } catch (e: Exception) {
-            throw RuntimeException("Error creating cookie", e)
-        }
+        val cookie = ResponseCookie.from("jwt")
+            .value(token)
+            .sameSite("Lax")
+            .httpOnly(httpOnly)
+            .secure(false)
+            .maxAge(if (invalidate) 0 else 200 * 60 * 60 * 24)
+            .path(path)
+            .build()
 
         return cookie
     }
