@@ -1,5 +1,5 @@
 ALTER TABLE store
-    DROP COLUMN address_id;
+    DROP COLUMN IF EXISTS address_id;
 
 ALTER TABLE product
     ALTER COLUMN price SET NOT NULL;
