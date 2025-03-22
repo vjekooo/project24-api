@@ -1,5 +1,5 @@
 ALTER TABLE store
-    ADD address_id BIGINT;
+    ADD IF NOT EXISTS address_id BIGINT;
 
 ALTER TABLE store
     ADD CONSTRAINT uc_store_address UNIQUE (address_id);
