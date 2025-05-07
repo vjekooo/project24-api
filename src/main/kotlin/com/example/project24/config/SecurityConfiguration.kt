@@ -46,7 +46,10 @@ class SecurityConfiguration(
                         "/api/search/**",
                         "/api/product/latest",
                         "/api/product/popular",
-                        "/api/store/latest"
+                        "/api/store/latest",
+                        "/api/store/**",
+                        "/api/product/**",
+                        "/api/category"
                     )
                     .permitAll()
                     .anyRequest().authenticated();
